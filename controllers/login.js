@@ -1,7 +1,9 @@
 const userLogIn = require('../models/user');
+const bcrypt = require('bcrypt');
+
 
 async function loginToServerController(req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     const { name, email, password } = req.body;
 
     try {
@@ -10,14 +12,8 @@ async function loginToServerController(req, res) {
                 email: email
             }
         });
-
         if (userAlreadyExists) {
-            const isPasswordValid = await userLogIn.findOne({
-                where: {
-                    password: password
-                }
-            });
-
+            const isPasswordValid = await bcrypt.compare(password,userAlreadyExists.password);
             if (isPasswordValid) {
                 return res.status(202).json({ message: 'Login!!' });
             } else {

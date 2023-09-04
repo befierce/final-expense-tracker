@@ -1,4 +1,7 @@
 const userSignUp = require('../models/user');
+const bcrypt = require('bcrypt');
+
+
 
 async function signUpToTheServerController(req, res) {
     console.log(req.body);
@@ -16,8 +19,12 @@ async function signUpToTheServerController(req, res) {
         }
 
         else {
-            const newUser = await userSignUp.create({ name, email, password });
-            res.status(201).json({ message: 'SignUp Successful!!', user: newUser });
+            bcrypt.hash(password, 10, async (err, hash) => {
+                console.log(err);
+                const newUser = await userSignUp.create({ name, email, password: hash });
+                // console.log("newUser",newUser);
+                res.status(201).json({ message: 'SignUp Success!!', user: newUser });
+            });
         }
     } catch (error) {
         console.error('Error creating user:', error);
