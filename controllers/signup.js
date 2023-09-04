@@ -1,6 +1,6 @@
-const userSignUp = require('../models/signup');
+const userSignUp = require('../models/user');
 
-async function postSignUpDataToServer(req, res) {
+async function signUpToTheServerController(req, res) {
     console.log(req.body);
     const { name, email, password } = req.body;
 
@@ -27,5 +27,5 @@ async function postSignUpDataToServer(req, res) {
 
 
 module.exports = {
-    postSignUpDataToServer
+    signUpToTheServerController
 };
