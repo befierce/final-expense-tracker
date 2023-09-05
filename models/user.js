@@ -31,7 +31,7 @@ const userExpense = sequelize.define('user', {
     },
     userId: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
+       // primaryKey: true,
         //autoIncrement: true,
         allowNull: false,
         // field: 'userId', // This specifies the column name in the database

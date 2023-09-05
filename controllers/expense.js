@@ -23,8 +23,11 @@ exports.postExpenseDataToTheServer = (req, res, next) => {
 }
 
 exports.getExpenseDataFromTheServer = (req, res, next) => {
-    userExpense.findAll()
+    const userId = req.params.userId;
+    console.log("===",userId)
+    userExpense.findAll({where:{userId:userId}})
         .then((result) => {
+            console.log(result);
             res.json(result); // Send the result to the client
         })
         .catch((err) => {
@@ -35,13 +38,16 @@ exports.getExpenseDataFromTheServer = (req, res, next) => {
 
 exports.getSingleExpenseDataFromTheServer = (req, res, next) => {
     const id = req.params.id;
-
-    userExpense.findByPk(id)
+    console.log('****',id);
+    userExpense.findOne({
+        where:{id:id}
+    })
         .then((userData) => {
             if (!userData) {
                 return res.status(404).json({ error: 'User not found' });
             }
             res.json(userData);
+            console.log(userData)
         })
         .catch((err) => {
             console.error('Error fetching data:', err);

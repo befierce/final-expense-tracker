@@ -37,7 +37,7 @@ function editExpenseItem(event) {
     // localStorage.removeItem(key);
     var li = event.target.parentElement;
     var id = li.getAttribute('data-key');
-    axios.get(`http://localhost:3000/user/expense/${id}`).then((res) => {
+    axios.get(`http://localhost:3000/user/expense/edit/${id}`).then((res) => {
         document.getElementById('expenseAmount').value = res.data.money;
         document.getElementById('description').value = res.data.description;
         document.getElementById('category').value = res.data.category;
@@ -87,8 +87,11 @@ function displayExpenseItems(expenseData) {
 
 }
 function fetchAppointmentData() {
-    axios.get("http://localhost:3000/user/expense")
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    console.log("***",userId)
+    axios.get(`http://localhost:3000/user/expense/${userId}`)
         .then((response) => {
+            console.log(response);
             for (var i = 0; i < response.data.length; i++) {
                 displayExpenseItems(response.data[i]);
             }
