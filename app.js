@@ -1,14 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const Routes = require('./routes/routes');
+const { user, userExpense } = require('./models/user')
 
 
+
+user.sync();
+userExpense.sync();
 app.use(cors());
 app.use(express.json());
 
-app.use('/user/login',(req,res,then)=>{
-    console.log(req)
-})
+app.use(Routes);
 
 
 app.listen(3000,()=>{

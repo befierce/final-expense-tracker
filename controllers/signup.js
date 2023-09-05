@@ -1,4 +1,6 @@
-const userSignUp = require('../models/user');
+// const userSignUp = require('../models/user');
+const { user, userExpense } = require('../models/user');
+
 const bcrypt = require('bcrypt');
 
 
@@ -8,7 +10,7 @@ async function signUpToTheServerController(req, res) {
     const { name, email, password } = req.body;
 
     try {
-        const alreadyExists = await userSignUp.findOne({
+        const alreadyExists = await user.findOne({
             where: {
                 email: email
             }
@@ -21,7 +23,7 @@ async function signUpToTheServerController(req, res) {
         else {
             bcrypt.hash(password, 10, async (err, hash) => {
                 console.log(err);
-                const newUser = await userSignUp.create({ name, email, password: hash });
+                const newUser = await user.create({ name, email, password: hash });
                 // console.log("newUser",newUser);
                 res.status(201).json({ message: 'SignUp Success!!', user: newUser });
             });

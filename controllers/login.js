@@ -1,4 +1,6 @@
-const userLogIn = require('../models/user');
+// const userLogIn = require('../models/user');
+const { user, userExpense } = require('../models/user');
+
 const bcrypt = require('bcrypt');
 
 
@@ -7,15 +9,16 @@ async function loginToServerController(req, res) {
     const { name, email, password } = req.body;
 
     try {
-        const userAlreadyExists = await userLogIn.findOne({
+        const userAlreadyExists = await user.findOne({
             where: {
                 email: email
             }
         });
+        console.log(userAlreadyExists.id);
         if (userAlreadyExists) {
             const isPasswordValid = await bcrypt.compare(password,userAlreadyExists.password);
             if (isPasswordValid) {
-                return res.status(202).json({ message: 'Login!!' });
+                return res.status(202).json({ message: 'Login!!', userId: userAlreadyExists.id });
             } else {
                 return res.status(201).json({ message: 'Invalid password' });
             }
