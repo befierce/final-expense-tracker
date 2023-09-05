@@ -3,10 +3,11 @@ const { user, userExpense } = require('../models/user');
 
 
 exports.postExpenseDataToTheServer = (req, res, next) => {
-    const { id, money, description, category } = req.body;
+    const { id, userId, money, description, category } = req.body;
 
     userExpense.create({
         id: id,
+        userId: userId, 
         money: money,
         description: description,
         category: category

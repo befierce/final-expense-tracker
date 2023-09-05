@@ -1,4 +1,6 @@
-window.addEventListener('load', clearForm);
+window.addEventListener('load', ()=>{
+    document.getElementById('userlogin').reset();
+});
 
 
 var form = document.getElementById('userlogin');
@@ -25,9 +27,7 @@ async function login(e) {
             localStorage.setItem('userId', JSON.stringify(response.data.userId));
             showAlert('Success ' + response.data.message, 'success');
 
-            document.getElementById('username').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
+            document.getElementById("userlogin").reset();
 
 
             window.location.href = '../Ui/index.html';
@@ -44,6 +44,6 @@ function showAlert(message, type) {
     alert(message);
 }
 
-function clearForm() {
-    document.getElementById("userlogin").reset();
-}
+// function clearForm() {
+//     document.getElementById("userlogin").reset();
+// }

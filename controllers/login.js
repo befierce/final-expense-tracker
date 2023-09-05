@@ -18,7 +18,7 @@ async function loginToServerController(req, res) {
         if (userAlreadyExists) {
             const isPasswordValid = await bcrypt.compare(password,userAlreadyExists.password);
             if (isPasswordValid) {
-                return res.status(202).json({ message: 'Login!!', userId: userAlreadyExists.id });
+                return res.status(202).json({ message: 'Login!!', userId: userAlreadyExists.userId });
             } else {
                 return res.status(201).json({ message: 'Invalid password' });
             }
