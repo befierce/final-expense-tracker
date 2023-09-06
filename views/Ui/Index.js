@@ -88,10 +88,8 @@ function displayExpenseItems(expenseData) {
 }
 function fetchAppointmentData() {
     const userId = JSON.parse(localStorage.getItem('userId'));
-    console.log("***",userId)
     axios.get(`http://localhost:3000/user/expense/${userId}`)
         .then((response) => {
-            console.log(response);
             for (var i = 0; i < response.data.length; i++) {
                 displayExpenseItems(response.data[i]);
             }

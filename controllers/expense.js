@@ -1,10 +1,22 @@
 // const db = require('../util/database');
 const { user, userExpense } = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-
+const secretKey = '15s253d34dwe4ffsf3df4srr';
 exports.postExpenseDataToTheServer = (req, res, next) => {
-    const { id, userId, money, description, category } = req.body;
-
+    let { id, userId, money, description, category } = req.body;
+    // const recievedToken = userId;
+    console.log('recieved token',userId);
+    jwt.verify(userId,secretKey,(err,decoded)=>{
+        if(err){
+            return res.status(401).json({ error: 'Token is invalid' });
+        }
+        else{
+            console.log("decoded",decoded);
+            userId = decoded.userId;
+            console.log("retrieved user id:",userId);
+        }
+    })
     userExpense.create({
         id: id,
         userId: userId, 
@@ -23,8 +35,17 @@ exports.postExpenseDataToTheServer = (req, res, next) => {
 }
 
 exports.getExpenseDataFromTheServer = (req, res, next) => {
-    const userId = req.params.userId;
-    console.log("===",userId)
+    let userId = req.params.userId;
+    jwt.verify(userId,secretKey,(err,decoded)=>{
+        if(err){
+            return res.status(401).json({ error: 'Token is invalid' });
+        }
+        else{
+            console.log("decoded",decoded);
+            userId = decoded.userId;
+            console.log("retrieved user id:",userId);
+        }
+    })
     userExpense.findAll({where:{userId:userId}})
         .then((result) => {
             console.log(result);
@@ -57,7 +78,7 @@ exports.getSingleExpenseDataFromTheServer = (req, res, next) => {
 
 exports.deleteSingleExpenseDataFromTheServer = (req, res, next) => {
     const id = req.params.id;
-
+    console.log("item delete id",id);
     userExpense.destroy({
         where: { id: id }
     })

@@ -1,8 +1,11 @@
-// const userLogIn = require('../models/user');
 const { user, userExpense } = require('../models/user');
+const jwt = require('jsonwebtoken')
+
+
+
 
 const bcrypt = require('bcrypt');
-
+const secretKey = '15s253d34dwe4ffsf3df4srr';
 
 async function loginToServerController(req, res) {
     // console.log(req.body);
@@ -14,11 +17,12 @@ async function loginToServerController(req, res) {
                 email: email
             }
         });
-        console.log(userAlreadyExists.id);
+        // console.log(userAlreadyExists.id);//here is our ID
         if (userAlreadyExists) {
             const isPasswordValid = await bcrypt.compare(password,userAlreadyExists.password);
             if (isPasswordValid) {
-                return res.status(202).json({ message: 'Login!!', userId: userAlreadyExists.userId });
+                const token = jwt.sign({ userId: userAlreadyExists.userId }, secretKey);//generating token usign jwt
+                return res.status(202).json({ message: 'Login!!', token: token});
             } else {
                 return res.status(201).json({ message: 'Invalid password' });
             }
