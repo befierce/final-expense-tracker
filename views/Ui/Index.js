@@ -12,7 +12,6 @@ document.getElementById("expenseTracker").addEventListener("submit", function do
     var id = generateKey();
     var expenseData = {
         id: id,
-        userId: userId,
         money: money,
         description: decreptn,
         category: categry
@@ -20,7 +19,7 @@ document.getElementById("expenseTracker").addEventListener("submit", function do
     };
 
     console.log("data bring sent", expenseData)
-    axios.post("http://localhost:3000/user/expense", expenseData).then((res) => {
+    axios.post("http://localhost:3000/user/expense", expenseData,{ headers: { "Authorisation": userId } }).then((res) => {
         console.log("data  response after submit", res.data);
         displayExpenseItems(res.data)
         document.getElementById("expenseTracker").reset();
@@ -32,9 +31,6 @@ function generateKey() {
 }
 
 function editExpenseItem(event) {
-    // const expenseData = JSON.parse(localStorage.getItem(key));
-    // // Remove the expense item from local storage
-    // localStorage.removeItem(key);
     var li = event.target.parentElement;
     var id = li.getAttribute('data-key');
     axios.get(`http://localhost:3000/user/expense/edit/${id}`).then((res) => {
@@ -103,21 +99,22 @@ function fetchAppointmentData() {
 document.getElementById('getPremiumButton').onclick = async function (e) {
     const userId = JSON.parse(localStorage.getItem('userId'));
     const res = await axios.get('http://localhost:3000/user/purchase/premium', { headers: { "Authorisation": userId } });
-console.log("response after click on get premium",res)
+    console.log("response after click on get premium", res)
     var options =
     {
         'key_id': res.data.key_id,
         'order_id': res.data.order.id,
 
         'handler': async function (response) {
+            console.log('Payment successful');
+            console.log('Payment ID: ' + response.razorpay_payment_id);
+            console.log('Order ID: ' + response.razorpay_order_id);
+            console.log('Signature: ' + response.razorpay_signature);
 
-            const premium = await axios.post(`http://localhost:3000//user/purchase/premium`, {
+            const premium = await axios.post(`http://localhost:3000/user/purchase/premium`, {
                 order_id: options.order_id,
-                payment_id: response.razorpay_payment_id,
-                
+                payment_id: response.razorpay_payment_id
             }, { headers: { 'Authorization': localStorage.getItem('token') } })
-            console.log(response)
-            console.log("payment id");
             alert("you are a premium user now");
         }
     }

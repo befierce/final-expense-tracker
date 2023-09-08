@@ -1,4 +1,3 @@
-// const db = require('../util/database');
 const { user, userExpense } = require('../models/user');
 const jwt = require('jsonwebtoken');
 
@@ -7,13 +6,13 @@ require('dotenv').config();
 const secretKey = '15s253d34dwe4ffsf3df4srr';
 
 exports.postExpenseDataToTheServer = (req, res, next) => {
-    const secretKey = process.env.secretKey;
-    console.log(secretKey);
-    let { id, userId, money, description, category } = req.body;
-    // const recievedToken = userId;
-    console.log('recieved token',userId);
-    jwt.verify(userId,secretKey,(err,decoded)=>{
+    const secretKey = '15s253d34dwe4ffsf3df4srr';
+     let { id, money, description, category } = req.body;
+
+    jwt.verify(req.headers.authorisation,secretKey,(err,decoded)=>{
+        console.log(decoded);
         if(err){
+            console.log(decoded);
             return res.status(401).json({ error: 'Token is invalid' });
         }
         else{

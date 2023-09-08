@@ -19,7 +19,11 @@ const user = sequelize.define('users_list',{
         allowNull: false,
         unique: true
     },
-    password: Sequelize.STRING
+    password: Sequelize.STRING,
+    premium: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+    }
 })
 
 
