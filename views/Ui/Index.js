@@ -87,10 +87,22 @@ function fetchAppointmentData() {
     console.log(userId)
     axios.get(`http://localhost:3000/user/expense/${userId}`)
         .then((response) => {
-            for (var i = 0; i < response.data.length; i++) {
-                displayExpenseItems(response.data[i]);
+            const { result, isPremiumUser } = response.data;
+
+            if (isPremiumUser) {
+                const premiumMessage = document.getElementById('premiumMessage');
+                if (premiumMessage) {
+                    premiumMessage.style.display = 'block';
+                }
+                const getPremiumButton = document.getElementById('getPremiumButton');
+                if (getPremiumButton) {
+                    getPremiumButton.style.display = 'none';
+                }
             }
-        })
+            for (var i = 0; i < result.length; i++) {
+                displayExpenseItems(result[i]);
+            }
+        })  
         .catch((error) => {
             console.log("error");
         });
@@ -115,7 +127,12 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id
             }, { headers: { 'Authorization': localStorage.getItem('token') } })
-            alert("you are a premium user now");
+            console.log("Before",response);
+            handlePaymentSuccess(response);
+            const getPremiumButton = document.getElementById('getPremiumButton');
+                if (getPremiumButton) {
+                    getPremiumButton.style.display = 'none';
+                }
         }
     }
     const rzp1 = new Razorpay(options);
@@ -123,17 +140,14 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
     e.preventDefault();
 
     rzp1.on('payment.failed', async function (response) {
-        console.log('Payment failed');
-        try {
-            // const cancelRes = await axios.post(`http://localhost:3000/premiumroute/updatetransactionstatus`, {
-            //     order_id: options.order_id,
-            //     suc: true
-            // }, { headers });
-            // console.log('Cancellation request response:', cancelRes.data);
-            alert('Something went wrong');
-        } catch (error) {
-            console.error('Error occured during payment:', error);
-            alert('Error: Something went wrong while paying');
-        }
+        alert("something went wrong");
     })
+}
+
+function handlePaymentSuccess(response) {
+    // Display "Premium" message
+    var premiumMessage = document.getElementById('premiumMessage');
+    if (premiumMessage) {
+        premiumMessage.style.display = 'block';
+    }
 }
