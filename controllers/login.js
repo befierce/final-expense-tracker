@@ -17,7 +17,8 @@ async function loginToServerController(req, res) {
                 email: email
             }
         });
-        // console.log(userAlreadyExists.id);//here is our ID
+
+        
         if (userAlreadyExists) {
             const isPasswordValid = await bcrypt.compare(password,userAlreadyExists.password);
             if (isPasswordValid) {

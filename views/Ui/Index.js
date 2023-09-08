@@ -88,6 +88,7 @@ function displayExpenseItems(expenseData) {
 }
 function fetchAppointmentData() {
     const userId = JSON.parse(localStorage.getItem('userId'));
+    console.log(userId)
     axios.get(`http://localhost:3000/user/expense/${userId}`)
         .then((response) => {
             for (var i = 0; i < response.data.length; i++) {
@@ -95,6 +96,47 @@ function fetchAppointmentData() {
             }
         })
         .catch((error) => {
-            console.log(error);
+            console.log("error");
         });
+}
+
+document.getElementById('getPremiumButton').onclick = async function (e) {
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    const res = await axios.get('http://localhost:3000/user/purchase/premium', { headers: { "Authorisation": userId } });
+console.log("response after click on get premium",res)
+    var options =
+    {
+        'key_id': res.data.key_id,
+        'order_id': res.data.order.id,
+
+        'handler': async function (response) {
+
+            const premium = await axios.post(`http://localhost:3000//user/purchase/premium`, {
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+                
+            }, { headers: { 'Authorization': localStorage.getItem('token') } })
+            console.log(response)
+            console.log("payment id");
+            alert("you are a premium user now");
+        }
+    }
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+
+    rzp1.on('payment.failed', async function (response) {
+        console.log('Payment failed');
+        try {
+            // const cancelRes = await axios.post(`http://localhost:3000/premiumroute/updatetransactionstatus`, {
+            //     order_id: options.order_id,
+            //     suc: true
+            // }, { headers });
+            // console.log('Cancellation request response:', cancelRes.data);
+            alert('Something went wrong');
+        } catch (error) {
+            console.error('Error occured during payment:', error);
+            alert('Error: Something went wrong while paying');
+        }
+    })
 }

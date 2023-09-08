@@ -42,10 +42,34 @@ const userExpense = sequelize.define('user', {
 }, {
     timestamps: false
 });
-// user.hasMany(userExpense, { foreignKey: 'userId' });
-// userExpense.belongsTo(user, { foreignKey: 'userId' });
+
+
+const Order = sequelize.define('order',{
+    id:{
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    status:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    paymentId:{
+        type: Sequelize.STRING,
+
+    },
+    orderId:{
+        type: Sequelize.STRING,
+        allowNull: false
+    }
+})
+
 user.hasMany(userExpense);
 userExpense.belongsTo(user);
 
 
-module.exports = {user,userExpense};
+user.hasMany(Order);
+Order.belongsTo(user);
+
+module.exports = {user,userExpense,Order};
