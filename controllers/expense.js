@@ -42,21 +42,11 @@ exports.postExpenseDataToTheServer = (req, res, next) => {
 exports.getExpenseDataFromTheServer = async (req, res, next) => {
     try {
         let userId = req.params.userId;
-        // Verify the JWT token
         const decoded = await jwt.verify(userId, secretKey);
-
-        // Extract userId from the decoded token
         userId = decoded.userId;
-
-        // Check premium status
         const isPremiumUser = await checkPremiumStatus(userId);
-
-        // console.log("****", isPremiumUser);
-
-        // Fetch user expenses
         const result = await userExpense.findAll({ where: { userId: userId } });
 
-        // console.log(result);
         res.json({ result, isPremiumUser }); // Send the result to the client
     } catch (err) {
         console.error('Error:', err);
@@ -64,33 +54,7 @@ exports.getExpenseDataFromTheServer = async (req, res, next) => {
     }
 }
 
-// exports.getExpenseDataFromTheServer = (req, res, next) => {
-//     let userId = req.params.userId;
-//     // console.log(userId);
-//     jwt.verify(userId,secretKey,(err,decoded)=>{
-//         if(err){
-//             // console.log('err');
-//             return res.status(401).json({ error: 'Token is invalid' });
-//         }
-//         else{
-//             // console.log("decoded",decoded);
-//             userId = decoded.userId;
-//             // console.log("retrieved user id:",userId);
-//         }
-//     })
 
-//     const isPremiumUser = checkPremiumStatus(userId);
-//     console.log("****",isPremiumUser)
-//     userExpense.findAll({where:{userId:userId}})
-//         .then((result) => {
-//             console.log(result);
-//             res.json({result, isPremiumUser}); // Send the result to the client
-//         })
-//         .catch((err) => {
-//             console.error('Error fetching data:', err);
-//             res.status(500).json({ error: 'Error fetching data' });
-//         });
-// }
 async function checkPremiumStatus(userId){
     try{
         const isUser = await user.findByPk(userId)
