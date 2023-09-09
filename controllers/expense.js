@@ -51,12 +51,12 @@ exports.getExpenseDataFromTheServer = async (req, res, next) => {
         // Check premium status
         const isPremiumUser = await checkPremiumStatus(userId);
 
-        console.log("****", isPremiumUser);
+        // console.log("****", isPremiumUser);
 
         // Fetch user expenses
         const result = await userExpense.findAll({ where: { userId: userId } });
 
-        console.log(result);
+        // console.log(result);
         res.json({ result, isPremiumUser }); // Send the result to the client
     } catch (err) {
         console.error('Error:', err);

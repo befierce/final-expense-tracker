@@ -93,6 +93,7 @@ function fetchAppointmentData() {
                 const premiumMessage = document.getElementById('premiumMessage');
                 if (premiumMessage) {
                     premiumMessage.style.display = 'block';
+                    displayLeaderboardButton();
                 }
                 const getPremiumButton = document.getElementById('getPremiumButton');
                 if (getPremiumButton) {
@@ -128,7 +129,10 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
                 payment_id: response.razorpay_payment_id
             }, { headers: { 'Authorization': localStorage.getItem('token') } })
             console.log("Before",response);
+
             handlePaymentSuccess(response);
+
+
             const getPremiumButton = document.getElementById('getPremiumButton');
                 if (getPremiumButton) {
                     getPremiumButton.style.display = 'none';
@@ -142,12 +146,52 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
     rzp1.on('payment.failed', async function (response) {
         alert("something went wrong");
     })
-}
+}   
 
 function handlePaymentSuccess(response) {
     // Display "Premium" message
     var premiumMessage = document.getElementById('premiumMessage');
     if (premiumMessage) {
         premiumMessage.style.display = 'block';
+        displayLeaderboardButton();
     }
+    // displayLeaderboardButton();
+}
+
+function displayLeaderboardButton() {
+    console.log("display leaderboard envoked")
+    const leaderboardButton = document.createElement('button');
+    leaderboardButton.id = 'leaderboardButton';
+    leaderboardButton.className = 'btn btn-success';
+    leaderboardButton.textContent = 'Show Leaderboard';
+    leaderboardButton.addEventListener('click',showLeaderboard)
+
+    // Append the "Leaderboard" button to the container where you want to display it
+    const container = document.getElementById('leaderboardContainer'); // Replace 'containerId' with the actual container ID
+    container.appendChild(leaderboardButton);
+}
+
+function showLeaderboard() {
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    axios.get('http://localhost:3000/user/premium/leaderboard', { headers: { "Authorization": userId } })
+        .then(response => {
+            const leaderboardContainer = document.getElementById('leaderboardContainer');
+            leaderboardContainer.innerHTML = ''; // Clear previous data if any
+
+            // Check if the "leaderboard" property exists and is an array
+            if (Array.isArray(response.data.leaderboard)) {
+                // Loop through the leaderboard data and create a list of users
+                response.data.leaderboard.forEach((user, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `${index + 1}. ${user.name}: $${user.expenses}`;
+                    leaderboardContainer.appendChild(listItem);
+                });
+            } else {
+                console.error('Invalid data format received from the server.');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }

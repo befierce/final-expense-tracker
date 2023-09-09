@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+</head>
+
+
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">YOUR EXPENSE TRACKER</h1>
+        <form id="expenseTracker">
+            <div class="mt-2">
+                <label for="expenseAmount">Expense Amount</label>
+                <br>
+                <input type="number" id="expenseAmount">
+            </div>
+            <div class="mt-2">
+                <label for="description">Description</label>
+                <br>
+                <input type="text" id="description">
+            </div>
+            <div class="mt-2">
+                <label for="category">category</label>
+                <br>
+                <select id="category">
+                    <option value="groceries">Groceries</option>
+                    <option value="rent">Rent</option>
+                    <option value="clothes">Utilities</option>
+                    <option value="entertainment">Entertainment</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <div class="mt-2">
+                <ul id="users" class="list-group">
+                    <!-- <li class="list-group-item">Dummy USER</li> -->
+                </ul>
+            </div>
+        </form>
+        <div id="premiumMessage" style="display: none;">
+            <p>Premium user!</p>
+        </div>
+        <button id="getPremiumButton" class="btn btn-success">Get Premium</button>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <!-- Container for the Leaderboard button -->
+        <div id="leaderboardContainer">
+            <!-- <button id="leaderboardButton" class="btn btn-info">Leaderboard</button> -->
+        </div>
+
+        <ul id="users" class="list-group">
+            <!-- ... (your existing list items) ... -->
+        </ul>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script src="Index.js"> </script>
+</body>
+
+</html>

@@ -76,4 +76,4 @@ userExpense.belongsTo(user);
 user.hasMany(Order);
 Order.belongsTo(user);
 
-module.exports = {user,userExpense,Order};
+module.exports = {user,userExpense,Order,sequelize};
