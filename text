@@ -1,0 +1,26 @@
+exports.forgotPasswordController = (req, res) => {
+  const userEmail = req.body.email;
+  
+  // Check if userEmail exists in your user database
+  // If it exists, generate a secure token or link for password reset
+  
+  // Send an email with the reset link or token
+  const emailData = {
+    to: userEmail,
+    subject: 'Password Reset',
+    // Include the password reset link or token in the email body
+    text: 'Here is your password reset link: https://example.com/reset-password?token=YOUR_TOKEN',
+  };
+  
+  // Use the SendinBlue API to send the email
+  apiInstance.sendTransacEmail(emailData)
+    .then(() => {
+      // Email sent successfully
+      res.status(200).json({ message: 'Password reset email sent successfully' });
+    })
+    .catch((error) => {
+      // Handle email sending error
+      console.error('Error sending password reset email:', error);
+      res.status(500).json({ error: 'Unable to send password reset email' });
+    });
+};

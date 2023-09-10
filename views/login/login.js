@@ -44,6 +44,3 @@ function showAlert(message, type) {
     alert(message);
 }
 
-// function clearForm() {
-//     document.getElementById("userlogin").reset();
-// }

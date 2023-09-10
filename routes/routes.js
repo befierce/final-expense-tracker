@@ -4,7 +4,7 @@ const routelogin = require('../controllers/login');
 const expense = require('../controllers/expense');
 const purchase = require('../controllers/purchase');
 const leaderboard = require('../controllers/leaderboard.js');
-
+const forgotPassword = require('../controllers/forgotPasswordControll')
 const router = express.Router();
 
 
@@ -22,4 +22,8 @@ router.get('/user/purchase/premium',purchase.purchasePremium);
 router.post('/user/purchase/premium',purchase.verifyPayment);
 
 router.get('/user/premium/leaderboard',leaderboard.getUserExpenseDataForLeaderboard);
+router.post('/user/password/forgotPassword',forgotPassword.forgotPasswordController);
+
+
+
 module.exports = router;
