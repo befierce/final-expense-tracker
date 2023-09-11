@@ -24,6 +24,10 @@ router.post('/user/purchase/premium',purchase.verifyPayment);
 router.get('/user/premium/leaderboard',leaderboard.getUserExpenseDataForLeaderboard);
 router.post('/user/password/forgotPassword',forgotPassword.forgotPasswordController);
 
+router.post('/user/password/resetPassword/',forgotPassword.changePasswordController);
+router.get('/user/password/resetPassword/:uuid',forgotPassword.resetPasswordController);
+
+
 
 
 module.exports = router;

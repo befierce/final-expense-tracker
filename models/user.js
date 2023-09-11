@@ -1,4 +1,6 @@
 const Sequelize = require('sequelize');
+const uuid = require('uuid');
+
 
 const sequelize = new Sequelize('complete_expense_tracker_db','root','10031998mysql@',{
     host:'localhost',
@@ -69,6 +71,28 @@ const Order = sequelize.define('order',{
     }
 })
 
+
+const forgotPasswordRequests = sequelize.define('forgotPasswordRequests',{
+    id:{
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    uuid:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    isActive:{
+        type: Sequelize.BOOLEAN
+    }
+})
+
+
+user.hasMany(forgotPasswordRequests);
+forgotPasswordRequests.belongsTo(user);
+
+
 user.hasMany(userExpense);
 userExpense.belongsTo(user);
 
@@ -76,4 +100,4 @@ userExpense.belongsTo(user);
 user.hasMany(Order);
 Order.belongsTo(user);
 
-module.exports = {user,userExpense,Order,sequelize};
+module.exports = {user,userExpense,Order,sequelize,forgotPasswordRequests};
