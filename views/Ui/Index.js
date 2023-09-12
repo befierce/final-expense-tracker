@@ -195,3 +195,10 @@ function showLeaderboard() {
             console.error(error);
         });
 }
+
+function download(){
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    // console.log(user)
+    console.log('downlaod button working');
+    axios.get('http://localhost:3000/download',{headers:{'authorisation':userId}})
+}
