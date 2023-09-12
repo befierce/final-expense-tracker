@@ -1,15 +1,48 @@
-const jwt  = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const secretKey = '15s253d34dwe4ffsf3df4srr';
+const { user, userExpense, Order, sequelize, forgotPasswordRequests } = require('../models/user')
+const AWS = require('aws-sdk');
 
-
-exports.downloadExpenseController = (req, res) => {
+exports.downloadExpenseController = async (req, res) => {
     console.log(req.headers);
-    jwt.verify(req.headers.authorisation,secretKey,(err,decoded)=>{
-        if(err){
-            return res.status(400).json({error: 'token is invalid'});
+    try {
+        const decoded = jwt.verify(req.headers.authorisation, secretKey)
+        console.log("token after decoding", decoded);
+        userId = decoded.userId;
+        const expenses = await userExpense.findAll({ where: { userId: userId } })
+        console.log("result", expenses);
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const filename = `Expenses${userId}`;
+        const fileURL = uploadToS3(stringifiedExpenses, filename);
+        res.status(200).json({ fileURL, success: true });
+
+    } catch (error) {
+        console.log("error in sendig file", error);
+        res.status(400).json({ "error": "some error happend file is not recieved" });
+    }
+}
+
+function uploadToS3(data, filename) {
+
+    let s3bucket  = new AWS.S3({
+        accessKeyId: 'AKIASPXESU3RKMHFQOUJ',
+        secretAccessKey: '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',
+    })
+    s3bucket.createBucket(()=>{
+        var params = {
+            Bucket: 'newexpensesbucket',
+            Key: filename,
+            Body: data
         }
-        else{
-            console.log("token after decoding",decoded);
-        }
+        s3bucket.upload(params,(err,s3response)=>{
+            if(err){
+                console.log(err)
+                console.log('something went wrong',err)
+            }
+            else{
+                console.log('sucess')
+                console.log('success',s3response)
+            }
+        })
     })
 }
