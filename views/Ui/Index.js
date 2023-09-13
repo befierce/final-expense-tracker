@@ -200,5 +200,16 @@ function download(){
     const userId = JSON.parse(localStorage.getItem('userId'));
     // console.log(user)
     console.log('downlaod button working');
-    axios.get('http://localhost:3000/download',{headers:{'authorisation':userId}})
+    axios.get('http://localhost:3000/download',{headers:{'authorisation':userId}}).then((res)=>{
+        if(res.status == 200){
+            var a = document.createElement("a");
+            a.href = res.data.fileURL;
+            a.download = "myexpense.csv";
+            a.click();
+        }else{
+                throw new error(response.data.message);
+        }
+    }).catch((err)=>{
+        showError(err);
+    })
 }

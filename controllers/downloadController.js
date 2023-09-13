@@ -12,8 +12,9 @@ exports.downloadExpenseController = async (req, res) => {
         const expenses = await userExpense.findAll({ where: { userId: userId } })
         console.log("result", expenses);
         const stringifiedExpenses = JSON.stringify(expenses);
-        const filename = `Expenses${userId}`;
-        const fileURL = uploadToS3(stringifiedExpenses, filename);
+        const filename = `Expenses${userId}/${new Date()}.txt`;
+        const fileURL =  await uploadToS3(stringifiedExpenses, filename);
+        console.log("file url reached properly",fileURL);
         res.status(200).json({ fileURL, success: true });
 
     } catch (error) {
@@ -22,27 +23,29 @@ exports.downloadExpenseController = async (req, res) => {
     }
 }
 
-function uploadToS3(data, filename) {
+const uploadToS3 =(data, filename) =>{
 
-    let s3bucket  = new AWS.S3({
+    return new Promise((resolve, reject)=>{
+        let s3bucket = new AWS.S3({
         accessKeyId: 'AKIASPXESU3RKMHFQOUJ',
         secretAccessKey: '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',
     })
-    s3bucket.createBucket(()=>{
-        var params = {
-            Bucket: 'newexpensesbucket',
-            Key: filename,
-            Body: data
+
+    var params = {
+        Bucket: 'newexpensesbucket',
+        Key: filename,
+        Body: data,
+        ACL: 'public-read'
+    }
+    s3bucket.upload(params, (err, s3response) => {
+        if (err) {
+            console.log(err)
+            console.log('something went wrong', err)
+            reject(err);
         }
-        s3bucket.upload(params,(err,s3response)=>{
-            if(err){
-                console.log(err)
-                console.log('something went wrong',err)
-            }
-            else{
-                console.log('sucess')
-                console.log('success',s3response)
-            }
-        })
-    })
+        else {
+            resolve(s3response.Location);
+        }
+    });
+});
 }
