@@ -66,6 +66,7 @@
         </div>
         <button id="getPremiumButton" class="btn btn-success">Get Premium</button>
         <button id="downloadExpense" class="btn btn-info" onclick="download()">Download Expense</button>
+        <button id="downloadAllExpenses" class="btn btn-info" onclick="downloadedData()">List Of Downloaded Files</button>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <!-- Container for the Leaderboard button -->
         <div id="leaderboardContainer">
@@ -76,6 +77,20 @@
             <!-- ... (your existing list items) ... -->
         </ul>
     </div>
+
+        <div>
+            <table id="expenseTable" class="table mt-4" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTableBody">
+                    <!-- Table rows will be added dynamically here -->
+                </tbody>
+            </table>
+        </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script src="Index.js"> </script>

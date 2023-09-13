@@ -88,6 +88,21 @@ const forgotPasswordRequests = sequelize.define('forgotPasswordRequests',{
     }
 })
 
+const Filedownloaded=sequelize.define('filedownloaded',{
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        
+        allowNull: false
+    },
+    url:Sequelize.STRING,
+    date:Sequelize.DATE
+})  
+
+
+user.hasMany(Filedownloaded)
+Filedownloaded.belongsTo(user)
 
 user.hasMany(forgotPasswordRequests);
 forgotPasswordRequests.belongsTo(user);
@@ -100,4 +115,4 @@ userExpense.belongsTo(user);
 user.hasMany(Order);
 Order.belongsTo(user);
 
-module.exports = {user,userExpense,Order,sequelize,forgotPasswordRequests};
+module.exports = {user,userExpense,Order,sequelize,forgotPasswordRequests,Filedownloaded};

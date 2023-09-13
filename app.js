@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const Routes = require('./routes/routes');
-const { user, userExpense, Order, forgotPasswordRequests } = require('./models/user');
+const { user, userExpense, Order, forgotPasswordRequests,Filedownloaded } = require('./models/user');
 require('dotenv').config();
 
 
@@ -11,6 +11,7 @@ user.sync();
 userExpense.sync();
 Order.sync();
 forgotPasswordRequests.sync();
+Filedownloaded.sync();
 
 app.use(cors());
 app.use(express.json());

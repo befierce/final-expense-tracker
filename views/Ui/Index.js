@@ -213,3 +213,50 @@ function download(){
         showError(err);
     })
 }
+
+
+function downloadedData(){
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    axios.get('http://localhost:3000/user/get/download/data',{headers:{'authorisation':userId}}).then((res) => {
+        const data = res.data;
+        displayDownloadedData(data);
+    }).catch((error)=>{
+        console.log(error);
+    })
+}
+
+function displayDownloadedData(data) {
+    const tableBody = document.getElementById('expenseTableBody');
+
+    // Clear any existing rows
+    tableBody.innerHTML = '';
+
+    // Loop through the received data and create rows for the table
+    data.forEach((item) => {
+        const row = tableBody.insertRow();
+        
+        // Create cells for date and link
+        const dateCell = row.insertCell(0);
+        const linkCell = row.insertCell(1);
+        
+        // Format the date as needed
+        const formattedDate = new Date(item.date).toLocaleString();
+
+        // Populate the cells with data
+        dateCell.innerText = formattedDate;
+        
+        // Create a link element for the download link
+        const linkElement = document.createElement('a');
+        linkElement.href = item.url;
+        linkElement.innerText = 'Download';
+        linkCell.appendChild(linkElement);
+    });
+
+    // Display the table
+    const expenseTable = document.getElementById('expenseTable');
+    expenseTable.style.display = 'table';
+}
+
+
+
+
