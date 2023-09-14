@@ -45,8 +45,15 @@ exports.getExpenseDataFromTheServer = async (req, res, next) => {
         const decoded = await jwt.verify(userId, secretKey);
         userId = decoded.userId;
         const isPremiumUser = await checkPremiumStatus(userId);
-        const result = await userExpense.findAll({ where: { userId: userId } });
 
+        const itemsPerPage = 3;
+        const page = req.query.page || 1;
+        const offSet = ((page-1)*itemsPerPage);
+        console.log("req.query",req.query);
+        //console.log(offSet);
+        const result = await userExpense.findAndCountAll({ where: { userId: userId }, offset: offSet, limit: itemsPerPage });
+
+        
         res.json({ result, isPremiumUser }); // Send the result to the client
     } catch (err) {
         console.error('Error:', err);

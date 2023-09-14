@@ -1,6 +1,98 @@
+
+let currentPage = 1;
+let itemsPerPage = 3
+
 window.addEventListener("DOMContentLoaded", () => {
-    fetchAppointmentData();
+    fetchAppointmentData(currentPage);
 });
+
+function fetchAppointmentData(page) {
+    currentPage = page;
+    const userId = JSON.parse(localStorage.getItem('userId'));
+    console.log(userId)
+    axios.get(`http://localhost:3000/user/expense/${userId}?page=${page}`)
+        .then((response) => {
+            console.log(response);
+            const { isPremiumUser } = response.data;
+            const result = response.data.result.rows;
+            console.log(response.data.result.count);
+            const count = response.data.result.count;
+            var totalPages = Math.ceil(count / itemsPerPage);
+            console.log("totalPages", totalPages)
+            const paginationButtons = document.getElementById('paginationButtons');
+            paginationButtons.innerHTML = '';
+            if (totalPages > 1) {
+                if (currentPage > 1) {
+                    const previousButton = document.createElement("button");
+                    previousButton.id = "previousPageButton";
+                    previousButton.className = "btn btn-primary";
+                    previousButton.textContent = "Previous";
+                    previousButton.addEventListener('click', () => {
+                        const expenseList = document.getElementById('users');
+                        expenseList.innerHTML = '';
+                        fetchAppointmentData(currentPage - 1);
+                    })
+                    const paginationDiv = document.getElementById("paginationButtons");
+                    paginationDiv.appendChild(previousButton);
+                }
+
+                if (currentPage < totalPages) {
+                    
+                    const nextButton = document.createElement("button");
+                    nextButton.id = "nextPageButton";
+                    nextButton.className = "btn btn-primary";
+                    nextButton.textContent = "Next"
+                    nextButton.addEventListener('click', () => {
+                        const expenseList = document.getElementById('users');
+                        expenseList.innerHTML = ''; 
+                        fetchAppointmentData(currentPage + 1);
+                    })
+                    console.log("currentpage", currentPage);
+                    const paginationDiv = document.getElementById("paginationButtons");
+                    paginationDiv.appendChild(nextButton);
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            if (isPremiumUser) {
+                const premiumMessage = document.getElementById('premiumMessage');
+                if (premiumMessage) {
+                   
+
+                    premiumMessage.style.display = 'block';
+                    if(currentPage == 1){
+                    displayLeaderboardButton();
+                }
+                }
+                const getPremiumButton = document.getElementById('getPremiumButton');
+                if (getPremiumButton) {
+                    getPremiumButton.style.display = 'none';
+                }
+            }
+            for (var i = 0; i < result.length; i++) {
+                displayExpenseItems(result[i]);
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+
+
 
 document.getElementById("expenseTracker").addEventListener("submit", function dosubmit(e) {
     e.preventDefault();
@@ -19,7 +111,7 @@ document.getElementById("expenseTracker").addEventListener("submit", function do
     };
 
     console.log("data bring sent", expenseData)
-    axios.post("http://localhost:3000/user/expense", expenseData,{ headers: { "Authorisation": userId } }).then((res) => {
+    axios.post("http://localhost:3000/user/expense", expenseData, { headers: { "Authorisation": userId } }).then((res) => {
         console.log("data  response after submit", res.data);
         displayExpenseItems(res.data)
         document.getElementById("expenseTracker").reset();
@@ -82,32 +174,9 @@ function displayExpenseItems(expenseData) {
     expenseList.appendChild(li);
 
 }
-function fetchAppointmentData() {
-    const userId = JSON.parse(localStorage.getItem('userId'));
-    console.log(userId)
-    axios.get(`http://localhost:3000/user/expense/${userId}`)
-        .then((response) => {
-            const { result, isPremiumUser } = response.data;
 
-            if (isPremiumUser) {
-                const premiumMessage = document.getElementById('premiumMessage');
-                if (premiumMessage) {
-                    premiumMessage.style.display = 'block';
-                    displayLeaderboardButton();
-                }
-                const getPremiumButton = document.getElementById('getPremiumButton');
-                if (getPremiumButton) {
-                    getPremiumButton.style.display = 'none';
-                }
-            }
-            for (var i = 0; i < result.length; i++) {
-                displayExpenseItems(result[i]);
-            }
-        })  
-        .catch((error) => {
-            console.log("error");
-        });
-}
+
+
 
 document.getElementById('getPremiumButton').onclick = async function (e) {
     const userId = JSON.parse(localStorage.getItem('userId'));
@@ -128,15 +197,15 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id
             }, { headers: { 'Authorization': localStorage.getItem('token') } })
-            console.log("Before",response);
+            console.log("Before", response);
 
             handlePaymentSuccess(response);
 
 
             const getPremiumButton = document.getElementById('getPremiumButton');
-                if (getPremiumButton) {
-                    getPremiumButton.style.display = 'none';
-                }
+            if (getPremiumButton) {
+                getPremiumButton.style.display = 'none';
+            }
         }
     }
     const rzp1 = new Razorpay(options);
@@ -146,7 +215,7 @@ document.getElementById('getPremiumButton').onclick = async function (e) {
     rzp1.on('payment.failed', async function (response) {
         alert("something went wrong");
     })
-}   
+}
 
 function handlePaymentSuccess(response) {
     // Display "Premium" message
@@ -164,7 +233,7 @@ function displayLeaderboardButton() {
     leaderboardButton.id = 'leaderboardButton';
     leaderboardButton.className = 'btn btn-success';
     leaderboardButton.textContent = 'Show Leaderboard';
-    leaderboardButton.addEventListener('click',showLeaderboard)
+    leaderboardButton.addEventListener('click', showLeaderboard)
 
     // Append the "Leaderboard" button to the container where you want to display it
     const container = document.getElementById('leaderboardContainer'); // Replace 'containerId' with the actual container ID
@@ -196,31 +265,31 @@ function showLeaderboard() {
         });
 }
 
-function download(){
+function download() {
     const userId = JSON.parse(localStorage.getItem('userId'));
     // console.log(user)
     console.log('downlaod button working');
-    axios.get('http://localhost:3000/download',{headers:{'authorisation':userId}}).then((res)=>{
-        if(res.status == 200){
+    axios.get('http://localhost:3000/download', { headers: { 'authorisation': userId } }).then((res) => {
+        if (res.status == 200) {
             var a = document.createElement("a");
             a.href = res.data.fileURL;
             a.download = "myexpense.csv";
             a.click();
-        }else{
-                throw new error(response.data.message);
+        } else {
+            throw new error(response.data.message);
         }
-    }).catch((err)=>{
+    }).catch((err) => {
         showError(err);
     })
 }
 
 
-function downloadedData(){
+function downloadedData() {
     const userId = JSON.parse(localStorage.getItem('userId'));
-    axios.get('http://localhost:3000/user/get/download/data',{headers:{'authorisation':userId}}).then((res) => {
+    axios.get('http://localhost:3000/user/get/download/data', { headers: { 'authorisation': userId } }).then((res) => {
         const data = res.data;
         displayDownloadedData(data);
-    }).catch((error)=>{
+    }).catch((error) => {
         console.log(error);
     })
 }
@@ -234,17 +303,17 @@ function displayDownloadedData(data) {
     // Loop through the received data and create rows for the table
     data.forEach((item) => {
         const row = tableBody.insertRow();
-        
+
         // Create cells for date and link
         const dateCell = row.insertCell(0);
         const linkCell = row.insertCell(1);
-        
+
         // Format the date as needed
         const formattedDate = new Date(item.date).toLocaleString();
 
         // Populate the cells with data
         dateCell.innerText = formattedDate;
-        
+
         // Create a link element for the download link
         const linkElement = document.createElement('a');
         linkElement.href = item.url;

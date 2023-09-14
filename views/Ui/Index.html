@@ -11,21 +11,17 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
 
-        <style>
-            /* Style for the Download Expense button */
-            #downloadExpense {
-                background-color: #243038;
-                color: white;
-                /* padding: 10px 20px; */
-                border:solid;
-                border-radius: 10px;
-                cursor: pointer;
-            }
-
-        </style>
-        
+    <style>
+        /* Style for the Download Expense button */
+        #downloadExpense {
+            background-color: #243038;
+            color: white;
+            border: solid;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 
 <body>
     <div class="container mt-4">
@@ -57,27 +53,26 @@
             </div>
             <div class="mt-2">
                 <ul id="users" class="list-group">
-                    <!-- <li class="list-group-item">Dummy USER</li> -->
+                    <!-- Expense items will be displayed here -->
                 </ul>
             </div>
         </form>
+        <div  id = "paginationButtons">
+            <!-- <button id="previousPageButton" class="btn btn-primary">Previous</button> -->
+            <!-- <button id="nextPageButton" class="btn btn-primary">Next</button> -->
+        </div>
         <div id="premiumMessage" style="display: none;">
             <p>Premium user!</p>
         </div>
+        
         <button id="getPremiumButton" class="btn btn-success">Get Premium</button>
         <button id="downloadExpense" class="btn btn-info" onclick="download()">Download Expense</button>
         <button id="downloadAllExpenses" class="btn btn-info" onclick="downloadedData()">List Of Downloaded Files</button>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <!-- Container for the Leaderboard button -->
         <div id="leaderboardContainer">
-            <!-- <button id="leaderboardButton" class="btn btn-info">Leaderboard</button> -->
+            <!-- Leaderboard button will be displayed here -->
         </div>
-
-        <ul id="users" class="list-group">
-            <!-- ... (your existing list items) ... -->
-        </ul>
-    </div>
-
         <div>
             <table id="expenseTable" class="table mt-4" style="display: none;">
                 <thead>
@@ -87,13 +82,15 @@
                     </tr>
                 </thead>
                 <tbody id="expenseTableBody">
-                    <!-- Table rows will be added dynamically here -->
+                    <!-- Downloaded data will be displayed here -->
                 </tbody>
             </table>
         </div>
+        
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
-    <script src="Index.js"> </script>
+    <script src="Index.js"></script>
 </body>
 
 </html>
