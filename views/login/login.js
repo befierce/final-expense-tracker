@@ -32,11 +32,11 @@ async function login(e) {
 
             window.location.href = '../Ui/index.html';
         }
-        else if (response.status === 201) {
+        else if (response.status === 404) {
             showAlert('sorry ' + response.data.message, 'error');
         }
     } catch (error) {
-        //console.error('Error:', error);
+        console.error('Error:', error);
     }
 }
 function showAlert(message, type) {

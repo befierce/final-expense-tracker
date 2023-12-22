@@ -164,7 +164,7 @@ function displayExpenseItems(expenseData) {
     li.appendChild(editButton);
 
     var removeButton = document.createElement('button');
-    removeButton.className = 'btn btn-sm btn-danger';
+    removeButton.className = 'btn btn-remove';
     removeButton.type = "button";
     removeButton.textContent = 'Remove';
     removeButton.addEventListener('click', removeExpenseItem);
@@ -252,7 +252,7 @@ function showLeaderboard() {
                 // Loop through the leaderboard data and create a list of users
                 response.data.leaderboard.forEach((user, index) => {
                     const listItem = document.createElement('li');
-                    listItem.className = 'list-group-item';
+                    listItem.className = 'leaderboard-expenses';
                     listItem.innerHTML = `${index + 1}. ${user.name}: $${user.expenses}`;
                     leaderboardContainer.appendChild(listItem);
                 });

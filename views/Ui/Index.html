@@ -10,17 +10,146 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
-
     <style>
         /* Style for the Download Expense button */
-        #downloadExpense {
-            background-color: #243038;
+        /* Style for the "Remove" button */
+        .btn-remove {
+            background-color:#703d3d;
+            /* Bright red background color */
+            border-color: #dc1616;
+            /* Bright red border color */
             color: white;
-            border: solid;
-            border-radius: 10px;
+            /* White text color */
+            border-radius: 5px;
+            padding: 6px 12px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+            /* Smooth background color transition */
+        }
+
+        /* Hover effect for the "Remove" button */
+        .btn-remove:hover {
+            background-color: #c0392b;
+            /* Slightly darker red on hover */
+        }
+
+        #downloadExpense {
+            background-color: #333333;
+            /* Dark gray background color */
+            color: #ffffff;
+            /* White text color */
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            /* Smooth background color transition */
+        }
+
+        /* Hover effect for the Download Expense button */
+        #downloadExpense:hover {
+            background-color: #222222;
+            /* Slightly darker gray on hover */
+        }
+
+        /* Style for other buttons (Submit, Get Premium, List Of Downloaded Files) */
+        .btn-primary,
+        #getPremiumButton,
+        #downloadAllExpenses {
+            background-color: #222222;
+            /* Dark gray background color */
+            border-color: #222222;
+            /* Dark gray border color */
+            color: #ffffff;
+            /* White text color */
+            border-radius: 10px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            /* Smooth background color transition */
+        }
+
+        /* Hover effect for other buttons */
+        .btn-primary:hover,
+        #getPremiumButton:hover,
+        #downloadAllExpenses:hover {
+            background-color: #111111;
+            /* Slightly darker gray on hover */
+        }
+
+        /* Style for the premium message */
+        #premiumMessage {
+            background-color: #444444;
+            /* Dark gray background color */
+            color: #ffffff;
+            /* White text color */
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        body {
+    background-color: #363333;
+    /* Replace "your-desired-color" with the color you want for the background */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+        /* Style for the container */
+        .container {
+            background-color: #111111;
+            /* Dark gray background color */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+            /* Dark shadow */
+        }
+
+        /* Style for the header */
+        h1 {
+            color: #ffffff;
+            /* White text color */
+            font-size: 28px;
+        }
+
+        /* Style for labels */
+        label {
+            color: #cccccc;
+            /* Light gray text color */
+        }
+
+        /* Style for input fields */
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555;
+            /* Darker gray border color */
+            border-radius: 5px;
+            margin-top: 5px;
+            background-color: #333333;
+            /* Dark gray background color for inputs */
+            color: #ffffff;
+            /* White text color */
+        }
+
+        /* Style for leaderboard list items */
+        .list-group-item {
+            color: #352323;
+            /* White text color */
+        }
+
+        /* Style for leaderboard expenses text */
+        .leaderboard-expenses {
+            color: #f39c12;
+            /* Yellow text color or your preferred color */
         }
     </style>
+
+
+
+
+
 </head>
 
 <body>
@@ -57,17 +186,18 @@
                 </ul>
             </div>
         </form>
-        <div  id = "paginationButtons">
+        <div id="paginationButtons">
             <!-- <button id="previousPageButton" class="btn btn-primary">Previous</button> -->
             <!-- <button id="nextPageButton" class="btn btn-primary">Next</button> -->
         </div>
         <div id="premiumMessage" style="display: none;">
             <p>Premium user!</p>
         </div>
-        
+
         <button id="getPremiumButton" class="btn btn-success">Get Premium</button>
         <button id="downloadExpense" class="btn btn-info" onclick="download()">Download Expense</button>
-        <button id="downloadAllExpenses" class="btn btn-info" onclick="downloadedData()">List Of Downloaded Files</button>
+        <button id="downloadAllExpenses" class="btn btn-info" onclick="downloadedData()">List Of Downloaded
+            Files</button>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <!-- Container for the Leaderboard button -->
         <div id="leaderboardContainer">
@@ -86,7 +216,7 @@
                 </tbody>
             </table>
         </div>
-        
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
