@@ -4,9 +4,10 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 
 async function signUpToTheServerController(req, res) {
-  console.log(req.body);
+  console.log("request reached to the server");
+  
   const { name, email, password } = req.body;
-
+  console.log({name,email,password});
   try {
     const alreadyExists = await user.findOne({
       where: {
@@ -20,7 +21,6 @@ async function signUpToTheServerController(req, res) {
       bcrypt.hash(password, 10, async (err, hash) => {
         console.log(err);
         const newUser = await user.create({ name, email, password: hash });
-        // console.log("newUser",newUser);
         res.status(201).json({ message: "SignUp Success!!", user: newUser });
       });
     }
