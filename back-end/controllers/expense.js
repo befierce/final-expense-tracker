@@ -7,8 +7,10 @@ const secretKey = "15s253d34dwe4ffsf3df4srr";
 
 exports.postExpenseDataToTheServer = (req, res, next) => {
   const secretKey = "15s253d34dwe4ffsf3df4srr";
-  let { id, money, description, category } = req.body;
 
+  console.log("expense data reached the server",req.body)
+  let { id, expenseAmount, description, category } = req.body;
+  let money = expenseAmount;
   jwt.verify(req.headers.authorisation, secretKey, (err, decoded) => {
     // console.log(decoded);
     if (err) {

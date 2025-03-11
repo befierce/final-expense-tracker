@@ -14,17 +14,19 @@ async function loginToServerController(req, res) {
         email: email,
       },
     });
-
+    console.log("reached at usesfinding on database",userAlreadyExists);
     if (userAlreadyExists) {
       const isPasswordValid = await bcrypt.compare(
         password,
         userAlreadyExists.password
       );
+
+      console.log("password is valid",isPasswordValid);
       if (isPasswordValid) {
         const token = jwt.sign({ userId: userAlreadyExists.userId }, secretKey); //generating token usign jwt
         return res.status(202).json({ message: "Login!!", token: token });
       } else {
-        return res.status(201).json({ message: "Invalid password" });
+        return res.status(404).json({ message: "Invalid password" });
       }
     } else {
       res.status(404).json({ message: "User not found" });

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AuthForm from "./components/AuthFrom";
+import ExpenseTracker from "./components/ExpenseTracker";
 // import MainPage from "./MainPage";
 
 const App = () => {
@@ -8,7 +9,7 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<AuthContainer />} />
-                {/* <Route path="/main" element={<MainPage />} /> */}
+                <Route path="/main" element={<ExpenseTracker />} />
             </Routes>
         </Router>
     );
