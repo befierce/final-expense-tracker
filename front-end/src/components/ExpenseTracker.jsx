@@ -1,6 +1,6 @@
 
 
-import { useState } from "react";
+import { useState , useEffect} from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 
 const ExpenseTracker = () => {
@@ -12,18 +12,48 @@ const ExpenseTracker = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newExpense = { id: Date.now(), expenseAmount, description, category };
-    console.log(newExpense)
-    setExpenses([...expenses, newExpense]);
     setExpenseAmount("");
     setDescription("");
     setCategory("groceries");
 
+    const token = localStorage.getItem('token');
     const response = await fetch("http://localhost:3000/user/expense",{
         method: "POST",
-        headers:{"Content-Type":"application/json"},
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization": `Bearer ${JSON.parse(token)}`,       
+        },
         body: JSON.stringify(newExpense)
     });
+    const result = await response.json();
+    console.log("response after saving single data to the server", result);
+
+    localStorage.setItem("userId", result.userId);
   };
+
+  useEffect(()=>{
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    console.log("token token", token)
+    const fetchExpenses = async ()=>{
+      try{
+        const response = await fetch(`http://localhost:3000/user/expense/${userId}`,{
+          method:'GET',
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization": `Bearer ${JSON.parse(token)}`       
+        }
+        });
+        const data = await response.json();
+        const expensesList = data.result.rows;
+        console.log("response from server on refreshing", data.result.rows);
+        setExpenses(expensesList);
+      }catch(error){
+        console.log(response)
+      }
+    }
+    fetchExpenses();
+  },[]);
 
 
   return (

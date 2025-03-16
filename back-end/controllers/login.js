@@ -6,6 +6,7 @@ const secretKey = "15s253d34dwe4ffsf3df4srr";
 
 async function loginToServerController(req, res) {
   // console.log(req.body);
+  const secretKey = "15s253d34dwe4ffsf3df4srr";
   const { name, email, password } = req.body;
 
   try {
@@ -23,7 +24,7 @@ async function loginToServerController(req, res) {
 
       console.log("password is valid",isPasswordValid);
       if (isPasswordValid) {
-        const token = jwt.sign({ userId: userAlreadyExists.userId }, secretKey); //generating token usign jwt
+        const token = jwt.sign({ userId: userAlreadyExists.userId }, "15s253d34dwe4ffsf3df4srr"); //generating token usign jwt
         return res.status(202).json({ message: "Login!!", token: token });
       } else {
         return res.status(404).json({ message: "Invalid password" });
