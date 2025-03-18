@@ -56,7 +56,10 @@ const ExpenseTracker = () => {
   }, []);
 
   async function handleDelete(id) {
-    const response = await fetch();
+    console.log(id);
+    const response = await fetch(`http://localhost:3000/user/expense/${id}`,{
+      method: 'DELETE'
+    });
   }
   async function handleUpdate(id) {
     const response = await fetch();
@@ -106,15 +109,15 @@ const ExpenseTracker = () => {
         {expenses.map((expense) => (
           <li key={expense.id} className="list-group-item">
             {expense.description} - ${expense.expenseAmount} ({expense.category})
-            <Button onClick={() => { handleDelete(expenseItem.id) }}>{"delete"}</Button>
-            <Button onClick={() => { handleUpdate(expenseItem.id) }}>{"update"}</Button>
+            <Button onClick={() => { handleDelete(expense.id) }}>{"delete"}</Button>
+            <Button onClick={() => { handleUpdate(expense.id) }}>{"update"}</Button>
           </li>
         ))}
 
         {expenseItem.id && <li key={expenseItem.id} className="list-group-item">
           {expenseItem.description} - ${expenseItem.expenseAmount} ({expenseItem.category})
-          <Button onClick={handleDelete(expenseItem.id)}>{"delete"}</Button>
-          <Button onClick={handleUpdate(expenseItem.id)}>{"update"}</Button>
+          <Button onClick={handleDelete(key)}>{"delete"}</Button>
+          <Button onClick={handleUpdate(key)}>{"update"}</Button>
         </li>}
 
       </ul>

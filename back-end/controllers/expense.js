@@ -94,6 +94,7 @@ exports.getSingleExpenseDataFromTheServer = (req, res, next) => {
 };
 
 exports.deleteSingleExpenseDataFromTheServer = (req, res, next) => {
+  console.log("delete request reached the server");
   const id = req.params.id;
   console.log("item delete id", id);
   userExpense
