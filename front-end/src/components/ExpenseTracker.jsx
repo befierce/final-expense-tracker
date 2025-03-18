@@ -55,12 +55,22 @@ const ExpenseTracker = () => {
     fetchExpenses();
   }, []);
 
+
   async function handleDelete(id) {
-    console.log(id);
-    const response = await fetch(`http://localhost:3000/user/expense/${id}`,{
-      method: 'DELETE'
-    });
+    try {
+      const response = await fetch(`http://localhost:3000/user/expense/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setExpenses((prevExpenses) => prevExpenses.filter(expense => expense.id !== id));
+      } else {
+        console.error("Failed to delete expense");
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
   }
+  
   async function handleUpdate(id) {
     const response = await fetch();
   }
@@ -116,8 +126,8 @@ const ExpenseTracker = () => {
 
         {expenseItem.id && <li key={expenseItem.id} className="list-group-item">
           {expenseItem.description} - ${expenseItem.expenseAmount} ({expenseItem.category})
-          <Button onClick={handleDelete(key)}>{"delete"}</Button>
-          <Button onClick={handleUpdate(key)}>{"update"}</Button>
+          <Button onClick={handleDelete(expenseItem.id)}>{"delete"}</Button>
+          <Button onClick={handleUpdate(expenseItem.id)}>{"update"}</Button>
         </li>}
 
       </ul>
