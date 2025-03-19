@@ -1,14 +1,12 @@
-
-import Button from "./Button.jsx"
+import Button from "./Button.jsx";
 import { useState, useEffect } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
 
 const ExpenseTracker = () => {
   const [expenseAmount, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
   const [expenses, setExpenses] = useState([]);
-  const [expenseItem, setExpensesItem] = useState({});
+  const [editingExpense, setEditingExpense] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +14,7 @@ const ExpenseTracker = () => {
     setExpenseAmount("");
     setDescription("");
     setCategory("groceries");
+
     const token = localStorage.getItem('token');
     const response = await fetch("http://localhost:3000/user/expense", {
       method: "POST",
@@ -25,16 +24,18 @@ const ExpenseTracker = () => {
       },
       body: JSON.stringify(newExpense)
     });
+
     const result = await response.json();
     console.log("response after saving single data to the server", result);
-    setExpensesItem(result);
-    localStorage.setItem("userId", result.userId);
+
+    // Update the expenses state to include the new expense
+    setExpenses((prevExpenses) => [...prevExpenses, result]);
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    console.log("token token", token)
+
     const fetchExpenses = async () => {
       try {
         const response = await fetch(`http://localhost:3000/user/expense/${userId}`, {
@@ -46,21 +47,21 @@ const ExpenseTracker = () => {
         });
         const data = await response.json();
         const expensesList = data.result.rows;
-        console.log("response from server on refreshing", data.result.rows);
         setExpenses(expensesList);
       } catch (error) {
-        console.log(response)
+        console.error("Error fetching expenses:", error);
       }
-    }
+    };
+
     fetchExpenses();
   }, []);
 
-
-  async function handleDelete(id) {
+  const handleDelete = async (id) => {
     try {
       const response = await fetch(`http://localhost:3000/user/expense/${id}`, {
         method: "DELETE",
       });
+
       if (response.ok) {
         setExpenses((prevExpenses) => prevExpenses.filter(expense => expense.id !== id));
       } else {
@@ -69,15 +70,62 @@ const ExpenseTracker = () => {
     } catch (error) {
       console.error("Error deleting expense:", error);
     }
-  }
+  };
+
+  const handleUpdate = async (id) => {
+    // Implement update logic here
+    const expenseToUpdate = expenses.find((expense) => expense.id === id);
+    if (expenseToUpdate) {
+      setEditingExpense(expenseToUpdate);
+      setExpenseAmount(expenseToUpdate.money);
+      setDescription(expenseToUpdate.description);
+      setCategory(expenseToUpdate.category);
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    const updatedExpense = {
+      id: editingExpense.id, // Expense ka ID jo update ho raha hai
+      expenseAmount,
+      description,
+      category,
+    };
   
-  async function handleUpdate(id) {
-    const response = await fetch();
-  }
+    const token = localStorage.getItem("token");
+
+    console.log("uodate clicked")
+    // const response = await fetch(`http://localhost:3000/user/expense/${editingExpense.id}`
+    //   , {
+    //   method: "PUT", // PUT request bhejo
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": `Bearer ${JSON.parse(token)}`,
+    //   },
+    //   body: JSON.stringify(updatedExpense), // Updated data bhejo
+    // });
+  
+    // const result = await response.json();
+    // console.log("response after updating expense:", result);
+  
+    // // Local state ko update karo
+    // setExpenses((prevExpenses) =>
+    //   prevExpenses.map((expense) =>
+    //     expense.id === editingExpense.id ? { ...expense, ...updatedExpense } : expense
+    //   )
+    // );
+  
+    // Form reset karo aur edit mode band karo
+    setEditingExpense(null);
+    setExpenseAmount("");
+    setDescription("");
+    setCategory("groceries");
+  };
+
   return (
     <div className="container mt-4">
       <h1 className="mb-4 text-white">YOUR EXPENSE TRACKER</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={editingExpense ? handleUpdateSubmit : handleSubmit}>
         <div className="mt-2">
           <label className="text-white">Expense Amount</label>
           <input
@@ -112,24 +160,30 @@ const ExpenseTracker = () => {
           </select>
         </div>
         <div className="mt-3">
-          <button type="submit" className="btn btn-primary" >Submit</button>
+          <button type="submit" className="btn btn-primary">{editingExpense ? "Update" : "Submit"}</button>
         </div>
+        {editingExpense && (
+    <button
+      type="button"
+      className="btn btn-secondary ms-2"
+      onClick={() => {
+        setEditingExpense(null); // Cancel edit mode
+        setExpenseAmount("");
+        setDescription("");
+        setCategory("groceries");
+      }}
+    >
+      Cancel
+    </button>)}
       </form>
       <ul className="list-group mt-3">
         {expenses.map((expense) => (
           <li key={expense.id} className="list-group-item">
-            {expense.description} - ${expense.expenseAmount} ({expense.category})
-            <Button onClick={() => { handleDelete(expense.id) }}>{"delete"}</Button>
-            <Button onClick={() => { handleUpdate(expense.id) }}>{"update"}</Button>
+            {expense.description} - ${expense.money} ({expense.category})
+            <Button onClick={() => handleDelete(expense.id)}>{"delete"}</Button>
+            <Button onClick={() => handleUpdate(expense.id)}>{"update"}</Button>
           </li>
         ))}
-
-        {expenseItem.id && <li key={expenseItem.id} className="list-group-item">
-          {expenseItem.description} - ${expenseItem.expenseAmount} ({expenseItem.category})
-          <Button onClick={handleDelete(expenseItem.id)}>{"delete"}</Button>
-          <Button onClick={handleUpdate(expenseItem.id)}>{"update"}</Button>
-        </li>}
-
       </ul>
       <button className="btn btn-success mt-3">Get Premium</button>
       <button className="btn btn-info mt-3">Download Expense</button>
@@ -139,4 +193,3 @@ const ExpenseTracker = () => {
 };
 
 export default ExpenseTracker;
-
