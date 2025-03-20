@@ -13,13 +13,13 @@ router.post("/user/login", routelogin.loginToServerController);
 //-----------------------------------------------------------
 router.get("/user/expense/:userId", expense.getExpenseDataFromTheServer);
 router.post("/user/expense", expense.postExpenseDataToTheServer);
-router.get("/user/expense/edit/:id", expense.getSingleExpenseDataFromTheServer);
+router.put("/user/expense/edit/:id", expense.updateSingleExpenseToTheServer);
 router.delete(
   "/user/expense/:id",
   expense.deleteSingleExpenseDataFromTheServer
 );
 
-router.get("/user/purchase/premium", purchase.purchasePremium);
+router.post("/user/purchase/premium", purchase.purchasePremium);
 router.post("/user/purchase/premium", purchase.verifyPayment);
 
 router.get(

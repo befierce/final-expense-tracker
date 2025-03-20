@@ -72,25 +72,32 @@ async function checkPremiumStatus(userId) {
     console.log(err);
   }
 }
+exports.updateSingleExpenseToTheServer = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { expenseAmount, description, category } = req.body;
 
-exports.getSingleExpenseDataFromTheServer = (req, res, next) => {
-  const id = req.params.id;
-  console.log("****", id);
-  userExpense
-    .findOne({
-      where: { id: id },
-    })
-    .then((userData) => {
-      if (!userData) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      res.json(userData);
-      console.log(userData);
-    })
-    .catch((err) => {
-      console.error("Error fetching data:", err);
-      res.status(500).json({ error: "Error fetching data" });
+    const expense = await userExpense.findOne({ where: { id } });
+
+    if (!expense) {
+      return res.status(404).json({ error: "Expense not found" });
+    }
+
+    // Update the expense
+    const result = await expense.update({
+      money: expenseAmount || expense.money,
+      description: description || expense.description,
+      category: category || expense.category,
     });
+
+    console.log("data updated - -", result);
+
+    // Send the updated expense back to the client
+    res.status(200).json({ message: "Expense updated successfully", result });
+  } catch (err) {
+    console.error("Error updating expense:", err);
+    res.status(500).json({ error: "Error updating expense" });
+  }
 };
 
 exports.deleteSingleExpenseDataFromTheServer = (req, res, next) => {

@@ -1,5 +1,8 @@
 import Button from "./Button.jsx";
 import { useState, useEffect } from "react";
+// import {loadStripe} from '@stripe/stripe-js';
+
+
 
 const ExpenseTracker = () => {
   const [expenseAmount, setExpenseAmount] = useState("");
@@ -7,6 +10,17 @@ const ExpenseTracker = () => {
   const [category, setCategory] = useState("groceries");
   const [expenses, setExpenses] = useState([]);
   const [editingExpense, setEditingExpense] = useState(null)
+
+  async function getPremiumHandler (){
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const response = await fetch("http://localhost:3000/user/purchase/premium",{
+      method: "POST",
+      headers: {
+        "Authorisation": `Bearer ${JSON.parse(token)}`
+      }
+    });
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,10 +85,9 @@ const ExpenseTracker = () => {
       console.error("Error deleting expense:", error);
     }
   };
-
-  const handleUpdate = async (id) => {
-    // Implement update logic here
+    const handleUpdate = async (id) => {
     const expenseToUpdate = expenses.find((expense) => expense.id === id);
+    console.log("expense to update", expenseToUpdate)
     if (expenseToUpdate) {
       setEditingExpense(expenseToUpdate);
       setExpenseAmount(expenseToUpdate.money);
@@ -82,46 +95,43 @@ const ExpenseTracker = () => {
       setCategory(expenseToUpdate.category);
     }
   };
-
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const updatedExpense = {
-      id: editingExpense.id, // Expense ka ID jo update ho raha hai
-      expenseAmount,
+      id: editingExpense.id,
+      expenseAmount, // Ensure this matches the backend's expected key
       description,
       category,
     };
-  
     const token = localStorage.getItem("token");
-
-    console.log("uodate clicked")
-    // const response = await fetch(`http://localhost:3000/user/expense/${editingExpense.id}`
-    //   , {
-    //   method: "PUT", // PUT request bhejo
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Authorization": `Bearer ${JSON.parse(token)}`,
-    //   },
-    //   body: JSON.stringify(updatedExpense), // Updated data bhejo
-    // });
-  
-    // const result = await response.json();
-    // console.log("response after updating expense:", result);
-  
-    // // Local state ko update karo
-    // setExpenses((prevExpenses) =>
-    //   prevExpenses.map((expense) =>
-    //     expense.id === editingExpense.id ? { ...expense, ...updatedExpense } : expense
-    //   )
-    // );
-  
-    // Form reset karo aur edit mode band karo
-    setEditingExpense(null);
-    setExpenseAmount("");
-    setDescription("");
-    setCategory("groceries");
+    try {
+      const response = await fetch(`http://localhost:3000/user/expense/edit/${editingExpense.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(token)}`,
+        },
+        body: JSON.stringify(updatedExpense),
+      });
+      const res = await response.json();
+      if (response.ok) {
+        setExpenses((prevExpenses) => {
+          const updatedExpenses = prevExpenses.map((expense) =>
+            expense.id === editingExpense.id ? res.result : expense
+          );
+          return updatedExpenses;
+        });
+        setEditingExpense(null);
+        setExpenseAmount("");
+        setDescription("");
+        setCategory("groceries");
+      } else {
+        console.error("Failed to update expense:", res);
+      }
+    } catch (error) {
+      console.error("Error updating expense:", error);
+    }
   };
-
   return (
     <div className="container mt-4">
       <h1 className="mb-4 text-white">YOUR EXPENSE TRACKER</h1>
@@ -185,7 +195,7 @@ const ExpenseTracker = () => {
           </li>
         ))}
       </ul>
-      <button className="btn btn-success mt-3">Get Premium</button>
+      <button className="btn btn-success mt-3" onClick={getPremiumHandler}>Get Premium</button>
       <button className="btn btn-info mt-3">Download Expense</button>
       <button className="btn btn-info mt-3">List Of Downloaded Files</button>
     </div>
