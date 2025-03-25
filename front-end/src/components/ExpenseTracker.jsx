@@ -1,27 +1,46 @@
 import Button from "./Button.jsx";
 import { useState, useEffect } from "react";
-// import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe(
+  "pk_test_51R4gz2KdbVF6fH8y7bm6jJmYbwMXc2xKqHh8iugHcYwlZeGKjfcqJ71dAEtjybtNcoFXNlVtcEmX9VvS6nUHyjDc00dwpkei8J"
+);
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-
-
+console.log(stripePromise);
 const ExpenseTracker = () => {
   const [expenseAmount, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
   const [expenses, setExpenses] = useState([]);
-  const [editingExpense, setEditingExpense] = useState(null)
-
-  async function getPremiumHandler (){
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    const response = await fetch("http://localhost:3000/user/purchase/premium",{
-      method: "POST",
-      headers: {
-        "Authorisation": `Bearer ${JSON.parse(token)}`
-      }
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [showPaymentForm,setShowPaymentForm] = useState(false);
+  const [paymentError,setPaymentError] = useState(false);
+  const [paymentSuccess,setPaymentSuccess] = useState(false);
+  const stripe = useStripe();
+  const elements = useElements();
+  const handlePaymentSubmit = async (event)=>{
+    event.preventDefault();
+    if (!stripe || !elements) {
+      return;
+    }
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement),
     });
-  }
+    if (error) {
+      console.error(error);
+      setPaymentError(true);
+    } else {
+      // Send paymentMethod.id to your backend to complete payment
+      console.log('PaymentMethod:', paymentMethod);
+      setPaymentSuccess(true);
+      // Add your backend API call here
+    }
 
+  }
+  async function getPremiumHandler() {
+    setShowPaymentForm(true);
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newExpense = { id: Date.now(), expenseAmount, description, category };
@@ -29,14 +48,14 @@ const ExpenseTracker = () => {
     setDescription("");
     setCategory("groceries");
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const response = await fetch("http://localhost:3000/user/expense", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${JSON.parse(token)}`,
+        Authorization: `Bearer ${JSON.parse(token)}`,
       },
-      body: JSON.stringify(newExpense)
+      body: JSON.stringify(newExpense),
     });
 
     const result = await response.json();
@@ -52,13 +71,16 @@ const ExpenseTracker = () => {
 
     const fetchExpenses = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/user/expense/${userId}`, {
-          method: 'GET',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${JSON.parse(token)}`
+        const response = await fetch(
+          `http://localhost:3000/user/expense/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${JSON.parse(token)}`,
+            },
           }
-        });
+        );
         const data = await response.json();
         const expensesList = data.result.rows;
         setExpenses(expensesList);
@@ -77,7 +99,9 @@ const ExpenseTracker = () => {
       });
 
       if (response.ok) {
-        setExpenses((prevExpenses) => prevExpenses.filter(expense => expense.id !== id));
+        setExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense.id !== id)
+        );
       } else {
         console.error("Failed to delete expense");
       }
@@ -85,9 +109,9 @@ const ExpenseTracker = () => {
       console.error("Error deleting expense:", error);
     }
   };
-    const handleUpdate = async (id) => {
+  const handleUpdate = async (id) => {
     const expenseToUpdate = expenses.find((expense) => expense.id === id);
-    console.log("expense to update", expenseToUpdate)
+    console.log("expense to update", expenseToUpdate);
     if (expenseToUpdate) {
       setEditingExpense(expenseToUpdate);
       setExpenseAmount(expenseToUpdate.money);
@@ -105,14 +129,17 @@ const ExpenseTracker = () => {
     };
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:3000/user/expense/edit/${editingExpense.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${JSON.parse(token)}`,
-        },
-        body: JSON.stringify(updatedExpense),
-      });
+      const response = await fetch(
+        `http://localhost:3000/user/expense/edit/${editingExpense.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${JSON.parse(token)}`,
+          },
+          body: JSON.stringify(updatedExpense),
+        }
+      );
       const res = await response.json();
       if (response.ok) {
         setExpenses((prevExpenses) => {
@@ -170,21 +197,24 @@ const ExpenseTracker = () => {
           </select>
         </div>
         <div className="mt-3">
-          <button type="submit" className="btn btn-primary">{editingExpense ? "Update" : "Submit"}</button>
+          <button type="submit" className="btn btn-primary">
+            {editingExpense ? "Update" : "Submit"}
+          </button>
         </div>
         {editingExpense && (
-    <button
-      type="button"
-      className="btn btn-secondary ms-2"
-      onClick={() => {
-        setEditingExpense(null); // Cancel edit mode
-        setExpenseAmount("");
-        setDescription("");
-        setCategory("groceries");
-      }}
-    >
-      Cancel
-    </button>)}
+          <button
+            type="button"
+            className="btn btn-secondary ms-2"
+            onClick={() => {
+              setEditingExpense(null); // Cancel edit mode
+              setExpenseAmount("");
+              setDescription("");
+              setCategory("groceries");
+            }}
+          >
+            Cancel
+          </button>
+        )}
       </form>
       <ul className="list-group mt-3">
         {expenses.map((expense) => (
@@ -195,7 +225,19 @@ const ExpenseTracker = () => {
           </li>
         ))}
       </ul>
-      <button className="btn btn-success mt-3" onClick={getPremiumHandler}>Get Premium</button>
+      <button className="btn btn-success mt-3" onClick={getPremiumHandler}>
+        Get Premium
+      </button>
+      {showPaymentForm && (
+        <form onSubmit={handlePaymentSubmit} className="mt-3 p-3 border rounded">
+          <CardElement className="mb-3" />
+          <button type="submit" className="btn btn-primary">
+            Pay $9.99
+          </button>
+        </form>
+      )}
+      {paymentError && (<div style={{ color: 'red' }}>{"payment Error"}</div>)}
+      {paymentSuccess && (<div style={{ color: 'green' }}>{"payment Success"}</div>)}
       <button className="btn btn-info mt-3">Download Expense</button>
       <button className="btn btn-info mt-3">List Of Downloaded Files</button>
     </div>

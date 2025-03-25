@@ -4,12 +4,23 @@ import AuthForm from "./components/AuthFrom";
 import ExpenseTracker from "./components/ExpenseTracker";
 // import MainPage from "./MainPage";
 
+// import { Router, Routes, Route } from 'react-router-dom';
+// import AuthContainer from './AuthContainer';
+// import ExpenseTracker from './ExpenseTracker';
+import StripeProvider from "./components/StripeProvider"
 const App = () => {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<AuthContainer />} />
-                <Route path="/main" element={<ExpenseTracker />} />
+                <Route 
+                    path="/main" 
+                    element={
+                        <StripeProvider>
+                            <ExpenseTracker />
+                        </StripeProvider>
+                    } 
+                />
             </Routes>
         </Router>
     );
