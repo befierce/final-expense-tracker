@@ -5,58 +5,57 @@ require("dotenv").config();
 
 const secretKey = "15s253d34dwe4ffsf3df4srr";
 
-exports.postExpenseDataToTheServer = (req, res, next) => {
-  const secretKey = "15s253d34dwe4ffsf3df4srr";
-  let { id, money, description, category } = req.body;
 
-  jwt.verify(req.headers.authorisation, secretKey, (err, decoded) => {
-    // console.log(decoded);
-    if (err) {
-      console.log(decoded);
-      return res.status(401).json({ error: "Token is invalid" });
-    } else {
-      console.log("decoded", decoded);
-      userId = decoded.userId;
-      console.log("retrieved user id:", userId);
+
+exports.postExpenseDataToTheServer = async (req, res, next) => {
+  try {
+    const secretKey = "15s253d34dwe4ffsf3df4srr";
+    const token = req.headers.authorization?.split(" ")[1];
+    console.log("token recieved", token);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
     }
-  });
-  userExpense
-    .create({
-      id: id,
-      userId: userId,
-      money: money,
-      description: description,
-      category: category,
-    })
-    .then((result) => {
-      const responseData = result.toJSON(); // Convert the result to JSON
-      res.json(responseData);
-    })
-    .catch((err) => {
-      console.error("Error inserting data:", err);
-      res.status(500).json({ error: "Error inserting data" });
-    });
-};
+    const decoded =  await jwt.verify(token,secretKey );
+    const userId = decoded.userId;
 
+    let { id, money, description, category } = req.body;
+  
+    // ✅ Insert into database with userId
+    const result = await userExpense.create({
+      id,
+      userId,
+      money,
+      description,
+      category,
+    });
+
+    res.json(result);
+  } catch (err) {
+    console.error("Error in postExpenseDataToTheServer:", err);
+    res.status(401).json({ error: "Invalid token or failed to insert data" });
+  }
+};
 exports.getExpenseDataFromTheServer = async (req, res, next) => {
   try {
-    let userId = req.params.userId;
-    const decoded = await jwt.verify(userId, secretKey);
-    userId = decoded.userId;
-    const isPremiumUser = await checkPremiumStatus(userId);
+    const userId = req.params.userId;
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = await jwt.verify(token, secretKey);
+    // userId = decoded.userId;
+    // const isPremiumUser = await checkPremiumStatus(userId);
 
-    const itemsPerPage = 3;
-    const page = req.query.page || 1;
-    const offSet = (page - 1) * itemsPerPage;
+    // const itemsPerPage = 3;
+    // const page = req.query.page || 1;
+    // const offSet = (page - 1) * itemsPerPage;
     console.log("req.query", req.query);
     //console.log(offSet);
     const result = await userExpense.findAndCountAll({
       where: { userId: userId },
-      offset: offSet,
-      limit: itemsPerPage,
+      // offset: offSet,
+      // limit: itemsPerPage,
     });
-
-    res.json({ result, isPremiumUser }); // Send the result to the client
+    console.log("fetching the data from server", result)
+    // res.json({ result, isPremiumUser }); 
+    res.json({ result }); // Send the result to the client
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Error fetching data" });

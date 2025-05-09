@@ -11,7 +11,7 @@ const router = express.Router();
 router.post("/user/signUp", routeSignUP.signUpToTheServerController);
 router.post("/user/login", routelogin.loginToServerController);
 //-----------------------------------------------------------
-router.get("/user/expense/:userId", expense.getExpenseDataFromTheServer);
+// router.get("/user/expense/:userId", expense.getExpenseDataFromTheServer);
 router.post("/user/expense", expense.postExpenseDataToTheServer);
 router.get("/user/expense/edit/:id", expense.getSingleExpenseDataFromTheServer);
 router.delete(
