@@ -5,8 +5,6 @@ require("dotenv").config();
 
 const secretKey = "15s253d34dwe4ffsf3df4srr";
 
-
-
 exports.postExpenseDataToTheServer = async (req, res, next) => {
   try {
     const secretKey = "15s253d34dwe4ffsf3df4srr";
@@ -15,11 +13,23 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
     }
-    const decoded =  await jwt.verify(token,secretKey );
+    let decoded;
+    try {
+      decoded = await jwt.verify(token, secretKey);
+    } catch (jwtError) {
+      if(jwtError instanceof jwt.JsonWebTokenError){
+        return res.status(401).json({error: "invalid token"});
+      }
+      if(jwtError instanceof jwt.TokenExpiredError){
+        return res.status(401).json({error:'token expired'});
+      }
+      throw jwtError;
+    }
+
     const userId = decoded.userId;
 
     let { id, money, description, category } = req.body;
-  
+
     // ✅ Insert into database with userId
     const result = await userExpense.create({
       id,
@@ -29,10 +39,24 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
       category,
     });
 
-    res.json(result);
+    res.status(201).json(result);
   } catch (err) {
     console.error("Error in postExpenseDataToTheServer:", err);
-    res.status(401).json({ error: "Invalid token or failed to insert data" });
+    if(err.name === 'sequelizeValidationError'){
+      return res.status(400).json({
+        error: "validation error",
+        details: err.errors.map(e => e.message)
+      });
+    }
+    if(err.name === 'SequelizeUniqueConstraintError'){
+      return res.status(409).json({
+        error: "Duplicate entry",
+        details: err.errors.map(e => e.message)
+      })
+    }
+    res.status(500).json({
+       error:"server error while saving expense",
+      message: err.message });
   }
 };
 exports.getExpenseDataFromTheServer = async (req, res, next) => {
@@ -53,8 +77,8 @@ exports.getExpenseDataFromTheServer = async (req, res, next) => {
       // offset: offSet,
       // limit: itemsPerPage,
     });
-    console.log("fetching the data from server", result)
-    // res.json({ result, isPremiumUser }); 
+    console.log("fetching the data from server", result);
+    // res.json({ result, isPremiumUser });
     res.json({ result }); // Send the result to the client
   } catch (err) {
     console.error("Error:", err);
