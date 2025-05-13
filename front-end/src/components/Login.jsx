@@ -17,7 +17,10 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
     });
-      console.log("Login Successful", response.data);
+      
+      const token = response.data.token;
+      console.log("token recieved", response.data.token);
+      localStorage.setItem('token',token);
     } catch (error) {
       console.error("Login Failed", error);
     }

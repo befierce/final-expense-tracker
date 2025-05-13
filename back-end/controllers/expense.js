@@ -9,6 +9,7 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
   try {
     const secretKey = "15s253d34dwe4ffsf3df4srr";
     const token = req.headers.authorization?.split(" ")[1];
+    console.log("request headers", req.body)
     console.log("token recieved", token);
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
@@ -16,7 +17,8 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
     let decoded;
     try {
       decoded = await jwt.verify(token, secretKey);
-    } catch (jwtError) {
+    } 
+    catch (jwtError) {
       if(jwtError instanceof jwt.JsonWebTokenError){
         return res.status(401).json({error: "invalid token"});
       }
@@ -25,12 +27,10 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
       }
       throw jwtError;
     }
-
+    console.log("decoded data", decoded);
     const userId = decoded.userId;
 
     let { id, money, description, category } = req.body;
-
-    // ✅ Insert into database with userId
     const result = await userExpense.create({
       id,
       userId,
@@ -38,7 +38,6 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
       description,
       category,
     });
-
     res.status(201).json(result);
   } catch (err) {
     console.error("Error in postExpenseDataToTheServer:", err);
@@ -61,10 +60,20 @@ exports.postExpenseDataToTheServer = async (req, res, next) => {
 };
 exports.getExpenseDataFromTheServer = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
     const token = req.headers.authorization?.split(" ")[1];
-    const decoded = await jwt.verify(token, secretKey);
-    // userId = decoded.userId;
+    let userId;
+    try{
+      const decoded = await jwt.verify(token,secretKey);
+      userId = decoded.userId;
+    }catch(jwtError){
+      if(jwtError instanceof jwt.JsonWebTokenError){
+        res.status(401).json({message:"invalid token"})
+      }
+      if(jwtError instanceof jwt.TokenExpiredError){
+        res.status(402).json({message:"token expired"})
+      }
+    }
+    
     // const isPremiumUser = await checkPremiumStatus(userId);
 
     // const itemsPerPage = 3;

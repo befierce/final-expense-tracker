@@ -1,7 +1,5 @@
-
-
-
 import { useState } from "react";
+import { useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 
 const ExpenseTracker = () => {
@@ -12,23 +10,47 @@ const ExpenseTracker = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const userId = localStorage.getItem('userId');
-    const token = localStorage.getItem('token');
-    const newExpense = { id: Date.now(), userId ,money, description, category };
+    const token = localStorage.getItem("token");
+    const newExpense = { id: Date.now(), money, description, category };
     setExpenses([...expenses, newExpense]);
-    const endpoint = "http://localhost:3000/user/expense"
-    await fetch(endpoint,{
+    const endpoint = "http://localhost:3000/user/expense";
+    await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Authorisation": token,
-        "content-type": "application/json" 
+        Authorization: `Bearer ${token}`,
+        "content-type": "application/json",
       },
-      body: JSON.stringify(newExpense)
-    })
+      body: JSON.stringify(newExpense),
+    });
     setExpenseAmount("");
     setDescription("");
     setCategory("groceries");
   };
+  useEffect(() => {
+    const fetchExpenses = async (e) => {
+      const token = localStorage.getItem('token');
+      const endpoint = "http://localhost:3000/user/expense";
+      try{
+        const response = await fetch(endpoint,{
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        const responsExtracted = await response.json();
+        const data = responsExtracted.result.rows;
+        console.log(typeof data);
+        const expenseArray = Object.values(data);
+        console.log(expenseArray);
+        setExpenses(...expenses,expenseArray);
+      }
+      catch(error){
+        console.log(error);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
 
   return (
     <div className="container mt-4">
@@ -68,13 +90,15 @@ const ExpenseTracker = () => {
           </select>
         </div>
         <div className="mt-3">
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <button type="submit" className="btn btn-primary">
+            Submit
+          </button>
         </div>
       </form>
       <ul className="list-group mt-3">
         {expenses.map((expense) => (
           <li key={expense.id} className="list-group-item">
-            {expense.description} - ${expense.expenseAmount} ({expense.category})
+            ${expense.money} - {expense.description} - ({expense.category})
           </li>
         ))}
       </ul>

@@ -35,13 +35,15 @@ const AuthForm = () => {
 
       const data = await response.json();
       console.log(isSignUp ? "Signup successful:" : "Login successful:", data);
+      const token = data.token;
 
       if (isSignUp) {
         // After signup, switch to login
         setIsSignUp(false);
       } else {
         // Save authentication details in localStorage (optional)
-        localStorage.setItem("user", JSON.stringify(data));
+        console.log(data)
+        localStorage.setItem("token", token);
 
         // Redirect to Main Page after successful login
         navigate("/main");
