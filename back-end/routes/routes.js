@@ -13,7 +13,7 @@ router.post("/user/login", routelogin.loginToServerController);
 //-----------------------------------------------------------
 router.get("/user/expense", expense.getExpenseDataFromTheServer);
 router.post("/user/expense", expense.postExpenseDataToTheServer);
-router.get("/user/expense/edit/:id", expense.getSingleExpenseDataFromTheServer);
+router.put("/user/expense/edit/:id", expense.updateSingleExpenseDataInTheServer);
 router.delete(
   "/user/expense/:id",
   expense.deleteSingleExpenseDataFromTheServer

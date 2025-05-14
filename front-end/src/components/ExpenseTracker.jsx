@@ -1,56 +1,89 @@
 import { useState } from "react";
 import { useEffect } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
-
 const ExpenseTracker = () => {
   const [money, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
   const [expenses, setExpenses] = useState([]);
-
+  const [editingId, setEditingId] = useState(null);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const newExpense = { id: Date.now(), money, description, category };
-    setExpenses([...expenses, newExpense]);
-    const endpoint = "http://localhost:3000/user/expense";
-    await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(newExpense),
-    });
+    if (editingId) {
+      const response = await fetch(`http://localhost:3000/user/expense/edit/${editingId}`, {
+        method: "PUT",
+        headers:{
+          Authorization: `Bearer ${token}`,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(newExpense)
+      });
+      const data = await response.json()
+      const updatedExpense = data.result[0];
+      const editedId = data.result[0].id;
+      console.log("id to be edited", editedId);
+      setExpenses((prevExpenses)=>{
+        return prevExpenses.map((expense)=>{
+          if(expense.id == editedId){
+            return updatedExpense;
+          }
+          return expense;
+        })
+      })
+    } else {
+      // const newExpense = { id: Date.now(), money, description, category };
+      setExpenses([...expenses, newExpense]);
+      const endpoint = "http://localhost:3000/user/expense";
+      await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newExpense),
+      });
+    }
+
     setExpenseAmount("");
     setDescription("");
     setCategory("groceries");
   };
   useEffect(() => {
     const fetchExpenses = async (e) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const endpoint = "http://localhost:3000/user/expense";
-      try{
-        const response = await fetch(endpoint,{
+      try {
+        const response = await fetch(endpoint, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const responsExtracted = await response.json();
         const data = responsExtracted.result.rows;
         console.log(typeof data);
         const expenseArray = Object.values(data);
         console.log(expenseArray);
-        setExpenses(...expenses,expenseArray);
-      }
-      catch(error){
+        setExpenses(...expenses, expenseArray);
+      } catch (error) {
         console.log(error);
       }
     };
 
     fetchExpenses();
   }, []);
+
+  const editHandler = (expense) => {
+    console.log("edit button clicked", expense);
+    setEditingId(expense.id);
+    setExpenseAmount(expense.money);
+    setDescription(expense.description);
+    setCategory(expense.category);
+  };
+  const deleteHandler = (id) => {
+    console.log("delete button clicked", id);
+  };
 
   return (
     <div className="container mt-4">
@@ -99,11 +132,37 @@ const ExpenseTracker = () => {
         {expenses.map((expense) => (
           <li key={expense.id} className="list-group-item">
             ${expense.money} - {expense.description} - ({expense.category})
+            <span>
+              <button
+                className="edit"
+                action="edit"
+                onClick={() => {
+                  editHandler(expense);
+                }}
+              >
+                edit
+              </button>
+            </span>
+            <span>
+              <button
+                className="delete"
+                action="delete"
+                onClick={() => {
+                  deleteHandler(expense);
+                }}
+              >
+                delete
+              </button>
+            </span>
           </li>
         ))}
       </ul>
-      <button className="btn btn-success mt-3">Get Premium</button>
-      <button className="btn btn-info mt-3">Download Expense</button>
+      <button className="btn btn-success mt-3" action="get-premium">
+        Get Premium
+      </button>
+      <button className="btn btn-info mt-3" action="download-expense">
+        Download Expense
+      </button>
       <button className="btn btn-info mt-3">List Of Downloaded Files</button>
     </div>
   );
