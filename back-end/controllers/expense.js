@@ -144,18 +144,16 @@ exports.updateSingleExpenseDataInTheServer = async (req, res, next) => {
   }
 };
 
-exports.deleteSingleExpenseDataFromTheServer = (req, res, next) => {
+exports.deleteSingleExpenseDataFromTheServer = async (req, res, next) => {
   const id = req.params.id;
   console.log("item delete id", id);
-  userExpense
-    .destroy({
-      where: { id: id },
-    })
-    .then(() => {
-      res.json({ userId: id, message: "Data deleted successfully" });
-    })
-    .catch((err) => {
-      console.error("Error deleting data:", err);
-      res.status(500).json({ error: "Error deleting data" });
-    });
+
+  try{
+    await userExpense.destroy({where:{id:id}})
+    res.status(200).json({ userId: id, message: "Data deleted successfully" });
+  }
+  catch(error){
+    console.error("Error deleting data:", err);
+    res.status(500).json({ error: "Error deleting data" });
+  }
 };

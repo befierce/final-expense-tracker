@@ -11,26 +11,29 @@ const ExpenseTracker = () => {
     const token = localStorage.getItem("token");
     const newExpense = { id: Date.now(), money, description, category };
     if (editingId) {
-      const response = await fetch(`http://localhost:3000/user/expense/edit/${editingId}`, {
-        method: "PUT",
-        headers:{
-          Authorization: `Bearer ${token}`,
-          "content-type": "application/json"
-        },
-        body: JSON.stringify(newExpense)
-      });
-      const data = await response.json()
+      const response = await fetch(
+        `http://localhost:3000/user/expense/edit/${editingId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(newExpense),
+        }
+      );
+      const data = await response.json();
       const updatedExpense = data.result[0];
       const editedId = data.result[0].id;
       console.log("id to be edited", editedId);
-      setExpenses((prevExpenses)=>{
-        return prevExpenses.map((expense)=>{
-          if(expense.id == editedId){
+      setExpenses((prevExpenses) => {
+        return prevExpenses.map((expense) => {
+          if (expense.id == editedId) {
             return updatedExpense;
           }
           return expense;
-        })
-      })
+        });
+      });
     } else {
       // const newExpense = { id: Date.now(), money, description, category };
       setExpenses([...expenses, newExpense]);
@@ -81,8 +84,26 @@ const ExpenseTracker = () => {
     setDescription(expense.description);
     setCategory(expense.category);
   };
-  const deleteHandler = (id) => {
-    console.log("delete button clicked", id);
+  const deleteHandler = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3000/user/expense/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "content-type": "Application/json",
+        },
+      });
+      if(response.ok){
+        setExpenses((prevExpenses)=>{
+          return prevExpenses.filter((expense)=>{
+            return cdexpense.id != id
+          })
+        })
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -148,7 +169,7 @@ const ExpenseTracker = () => {
                 className="delete"
                 action="delete"
                 onClick={() => {
-                  deleteHandler(expense);
+                  deleteHandler(expense.id);
                 }}
               >
                 delete
