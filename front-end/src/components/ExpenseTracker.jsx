@@ -1,11 +1,50 @@
+import StripePaymentModal from "./StripePaymentModal";
 import { useState } from "react";
 import { useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+
 const ExpenseTracker = () => {
   const [money, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
   const [expenses, setExpenses] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [isPremiuim, setIsPremium] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const getPremiumHandler = async (e) => {
+    console.log("premium button clicked");
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      "http://localhost:3000/user/purchase/premium",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+          "content-type": "Application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    const { clientSecret } = data;
+    setClientSecret(clientSecret);
+    setShowPaymentForm(true);
+    console.log(clientSecret);
+  };
+
+  const handlePaymentSucess = () => {};
+  const handleClosePaymentForm = () => {};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -85,7 +124,7 @@ const ExpenseTracker = () => {
     setCategory(expense.category);
   };
   const deleteHandler = async (id) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:3000/user/expense/${id}`, {
         method: "DELETE",
@@ -94,12 +133,12 @@ const ExpenseTracker = () => {
           "content-type": "Application/json",
         },
       });
-      if(response.ok){
-        setExpenses((prevExpenses)=>{
-          return prevExpenses.filter((expense)=>{
-            return cdexpense.id != id
-          })
-        })
+      if (response.ok) {
+        setExpenses((prevExpenses) => {
+          return prevExpenses.filter((expense) => {
+            return expense.id != id;
+          });
+        });
       }
     } catch (error) {
       console.log(error);
@@ -178,13 +217,32 @@ const ExpenseTracker = () => {
           </li>
         ))}
       </ul>
-      <button className="btn btn-success mt-3" action="get-premium">
-        Get Premium
-      </button>
-      <button className="btn btn-info mt-3" action="download-expense">
-        Download Expense
-      </button>
-      <button className="btn btn-info mt-3">List Of Downloaded Files</button>
+      {!isPremiuim && (
+        <button
+          className="btn btn-success mt-3"
+          action="get-premium"
+          onClick={() => {
+            getPremiumHandler();
+          }}
+        >
+          Get Premium
+        </button>
+      )}
+      {showPaymentForm && (
+        <StripePaymentModal
+          clientSecret={clientSecret}
+          onSuccess={handlePaymentSucess}
+          onclose={handleClosePaymentForm}
+        />
+      )}
+      {isPremiuim && (
+        <button className="btn btn-info mt-3" action="download-expense">
+          Download Expense
+        </button>
+      )}
+      {isPremiuim && (
+        <button className="btn btn-info mt-3">List Of Downloaded Files</button>
+      )}
     </div>
   );
 };

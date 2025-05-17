@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 const Routes = require('./routes/routes');
 const { user, userExpense, Order, forgotPasswordRequests,Filedownloaded } = require('./models/user');
-require('dotenv').config();
+
 
 
 

@@ -19,7 +19,7 @@ router.delete(
   expense.deleteSingleExpenseDataFromTheServer
 );
 
-router.get("/user/purchase/premium", purchase.purchasePremium);
+router.post("/user/purchase/premium", purchase.purchasePremium);
 router.post("/user/purchase/premium", purchase.verifyPayment);
 
 router.get(

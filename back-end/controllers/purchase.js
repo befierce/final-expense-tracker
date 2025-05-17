@@ -1,52 +1,41 @@
-const Razorpay = require("razorpay");
 const { user, userExpense, Order } = require("../models/user");
 const jwt = require("jsonwebtoken");
+const secretKey = "15s253d34dwe4ffsf3df4srr";
+const sercretStripeKey = process.env.STRIPE_SECRET_KEY;
 
+const stripe = require("stripe")(sercretStripeKey);
+
+// console.log(stripe);
 const purchasePremium = async (req, res) => {
+
+  console.log("request arrived")
   let userid;
-  jwt.verify(
-    req.headers.authorisation,
-    "15s253d34dwe4ffsf3df4srr",
-    (err, decoded) => {
-      if (err) {
-        return res.status(400).json({ message: false });
-      } else {
-        userid = decoded.userId;
+  const token = req.headers.authorization.split(" ")[1];
+  try {
+    try {
+      const decoded = await jwt.verify(token, secretKey);
+      console.log("decoded");
+    } catch (jwtError) {
+      if (jwtError instanceof jwt.JsonWebTokenError) {
+        return res.status(400).json({ message: "jwt error" });
+      }
+      if (jwtError instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: "token expired" });
       }
     }
-  );
-  try {
-    var rzp = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount:"10000",
+      currency: "inr",
+    })
 
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-    const amount = 25000;
-    const createOrder = () => {
-      return new Promise((resolve, reject) => {
-        rzp.orders.create({ amount, currency: "INR" }, (err, order) => {
-          if (err) {
-            console.log("i am coming");
-            reject(err);
-          } else {
-            resolve(order);
-          }
-        });
-      });
-    };
-    const order = await createOrder();
-    await Order.create({
-      orderId: order.id,
-      usersListUserId: userid,
-      status: "PENDING",
-    });
-    return res.status(201).json({
-      order,
-      key_id: rzp.key_id,
-    });
-  } catch (err) {
-    console.log("i am error");
-    res.status(401).json({ message: "someth ing went wrong", error: err });
+    const clientSecret = paymentIntent.client_secret;
+    const paymentId = paymentIntent.id;
+    console.log("payment intent result", {clientSecret,paymentId});
+    res.json({clientSecret,paymentId});
+
+  } catch (error) {
+      console.log("error", error);
+      res.status(500).json({message:"internal server error"})
   }
 };
 

@@ -3,8 +3,11 @@ import { useState } from "react";
 import AuthForm from "./components/AuthFrom";
 // import MainPage from "./MainPage";
 import ExpenseTracker from "./components/ExpenseTracker";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import {dotenv} from 'dotenv';
 
-
+// console.log(dotenv)
+// dotenv.config();
 const App = () => {
     return (
         <Router>
