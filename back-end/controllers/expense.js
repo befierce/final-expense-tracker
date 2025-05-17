@@ -3,9 +3,9 @@ const { user, userExpense } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { response } = require("express");
 
-require("dotenv").config();
+// require("dotenv").config();
 
-const secretKey = "15s253d34dwe4ffsf3df4srr";
+const secretKey = process.env.SECRET_KEY_JWT;
 
 exports.postExpenseDataToTheServer = async (req, res, next) => {
   try {
