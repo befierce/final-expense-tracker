@@ -152,8 +152,9 @@ const ExpenseTracker = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4 text-white">YOUR EXPENSE TRACKER</h1>
+    <div className="container">
+      <h1 className="">YOUR EXPENSE TRACKER</h1>
+      <button type="button">log out</button>
       <form onSubmit={handleSubmit}>
         <div className="mt-2">
           <label className="text-white">Expense Amount</label>
