@@ -42,8 +42,14 @@ const ExpenseTracker = () => {
     console.log(clientSecret);
   };
 
-  const handlePaymentSucess = () => {};
-  const handleClosePaymentForm = () => {};
+  const handlePaymentSucess = () => {
+    setIsPremium(true);
+    setShowPaymentForm(false);
+  };
+  const handleClosePaymentForm = () => {
+    console.log("close button clicked")
+    setShowPaymentForm(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -232,7 +238,7 @@ const ExpenseTracker = () => {
         <StripePaymentModal
           clientSecret={clientSecret}
           onSuccess={handlePaymentSucess}
-          onclose={handleClosePaymentForm}
+          onClose={handleClosePaymentForm}
         />
       )}
       {isPremiuim && (
