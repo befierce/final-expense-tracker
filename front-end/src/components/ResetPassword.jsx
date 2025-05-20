@@ -14,6 +14,16 @@ const ResetPassword = ()=>{
                 "content-type":"Application/json",
             }
         })
+            if(response.status === 404){
+                window.alert("user not found please enter the registerd email");
+            }
+            if(response.status === 500){
+                window.alert("can't send email something went wrong");
+            }
+            if(response.status === 200){
+                window.alert("password reset link sent to the registerd email");
+            }
+
     }
     return <form onSubmit={resetPasswordHandler}> 
         <label>please enter your registerd email id</label><br></br>

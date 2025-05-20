@@ -30,7 +30,7 @@ exports.forgotPasswordController = async (req, res) => {
     isActive: true,
     usersListUserId: userId,
   });
-  const resetLink = "xyz@mail.com";
+  const resetLink = `http://localhost:5173/resetPassword/${myUUID}`;
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -60,9 +60,9 @@ exports.forgotPasswordController = async (req, res) => {
       where: { uuid: uuid },
     });
     return res.status(500).json({
-      success:false,
-      message:"Failed to send reset email please try again later"
-    })
+      success: false,
+      message: "Failed to send reset email please try again later",
+    });
   }
 };
 
