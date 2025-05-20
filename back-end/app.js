@@ -12,7 +12,7 @@ const { user, userExpense, Order, forgotPasswordRequests,Filedownloaded } = requ
 user.sync();
 userExpense.sync();
 Order.sync();
-forgotPasswordRequests.sync();
+forgotPasswordRequests.sync({ force: true });
 Filedownloaded.sync();
 
 app.use(cors());
