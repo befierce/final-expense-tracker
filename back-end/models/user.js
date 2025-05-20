@@ -87,8 +87,13 @@ const forgotPasswordRequests = sequelize.define("forgotPasswordRequests", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  expiresAt:{
+    type: Sequelize.DATE,
+    allowNull:false
+  },
   isActive: {
     type: Sequelize.BOOLEAN,
+    defaultValue: false
   },
 });
 
