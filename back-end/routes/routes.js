@@ -31,13 +31,13 @@ router.post(
   forgotPassword.forgotPasswordController
 );
 
+// router.post(
+//   "/user/password/resetPassword/",
+//   forgotPassword.changePasswordController
+// );
 router.post(
-  "/user/password/resetPassword/",
-  forgotPassword.changePasswordController
-);
-router.get(
   "/user/password/resetPassword/:uuid",
-  forgotPassword.resetPasswordController
+  forgotPassword.changePasswordController
 );
 
 router.get("/download", downloadController.downloadExpenseController);

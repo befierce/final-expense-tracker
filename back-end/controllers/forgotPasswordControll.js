@@ -22,6 +22,12 @@ exports.forgotPasswordController = async (req, res) => {
     return res.status(404).json({ message: "user not found" });
   }
   const { userId } = userInDb.dataValues;
+
+  await forgotPasswordRequests.destroy({
+    where: {
+      usersListUserId: userId,
+    },
+  });
   const myUUID = uuidv4();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
   await forgotPasswordRequests.create({
@@ -66,51 +72,36 @@ exports.forgotPasswordController = async (req, res) => {
   }
 };
 
-exports.resetPasswordController = async (req, res) => {
-  try {
-    //console.log(req.params);
-
-    const isActive = await forgotPasswordRequests.findOne({
-      where: { uuid: req.params.uuid },
-    });
-
-    if (isActive) {
-      // console.log('request reached here');
-      return res.sendFile(
-        path.join(__dirname, "../views/login/resetPassword.html")
-      );
-    } else {
-      return res.status(404).json({ error: "Invalid or expired reset link" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 exports.changePasswordController = async (req, res) => {
   try {
-    console.log("req reached here 2", req.body);
-    const { newPassword, uuid } = req.body;
-    console.log("newPassword", newPassword);
-    console.log("uuid", uuid);
+    const { newPassword } = req.body;
+    const uuid = req.params.uuid;
+    console.log("new password and uuid", newPassword, uuid);
     const result = await forgotPasswordRequests.findOne({
-      where: { uuid: uuid, isActive: true },
+      where: {
+        uuid: uuid,
+        isActive: true,
+      },
     });
-    console.log("result", result);
+    if (!result) {
+      res.status(400).json({ message: "can'proceed some error" });
+    }
     const id = result.dataValues.usersListUserId;
-    result.update({ isActive: false });
-
-    bcrypt.hash(newPassword, 10, async (err, hash) => {
-      await user.update({ password: hash }, { where: { userId: id } });
-      res.status(200).json({
-        message:
-          "your password is updated , now go to login page and login again",
-        success: "ok",
-      });
+    const hash = await bcrypt.hash(newPassword, 10);
+    const result1 = await user.update({ password: hash }, { where: { userId: id } });
+    console.log("result after updating the password table",result1)
+    if(!result){
+      res.status(401).json({message:"something went wrong while updating the password"});
+    }
+    res.status(200).json({
+      message:
+        "your password is updated , now go to login page and login again",
+      success: "ok",
     });
   } catch (err) {
     console.log(err);
-    console.log("something went wrong");
+    console.log("something went wrong while setting up new password");
     res.status(503).json("got error while updating");
   }
 };
