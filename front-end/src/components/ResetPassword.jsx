@@ -1,9 +1,9 @@
 import { useRef } from "react";
-
+import { useNavigate, useParams } from "react-router-dom";
 
 const ResetPassword = ()=>{
     const emailInput = useRef(null);
-
+    const navigate = useNavigate();
     const resetPasswordHandler = async (e)=>{
         const email = emailInput.current.value;
         e.preventDefault();
@@ -23,7 +23,7 @@ const ResetPassword = ()=>{
             if(response.status === 200){
                 window.alert("password reset link sent to the registerd email");
             }
-
+            navigate("/")
     }
     return <form onSubmit={resetPasswordHandler}> 
         <label>please enter your registerd email id</label><br></br>

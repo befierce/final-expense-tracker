@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import { useState } from "react";
 import AuthForm from "./components/AuthFrom";
 import ResetPassword from "./components/ResetPassword";
-// import MainPage from "./MainPage";
 import ExpenseTracker from "./components/ExpenseTracker";
 import ResetPasswordForm from "./components/ResetPasswordForm";
 
@@ -20,12 +19,5 @@ const App = () => {
         </Router>
     );
 };
-
-// const AuthContainer = () => {
-//     const navigate = useNavigate();
-//     const [isSignUp, setIsSignUp] = useState(true);
-
-//     return <AuthForm isSignUp={isSignUp} setIsSignUp={setIsSignUp} navigate={navigate} />;
-// };
 
 export default App;

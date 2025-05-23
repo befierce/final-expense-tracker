@@ -85,14 +85,14 @@ exports.changePasswordController = async (req, res) => {
       },
     });
     if (!result) {
-      res.status(400).json({ message: "can'proceed some error" });
+      return res.status(400).json({ message: "can'proceed some error" });
     }
     const id = result.dataValues.usersListUserId;
     const hash = await bcrypt.hash(newPassword, 10);
     const result1 = await user.update({ password: hash }, { where: { userId: id } });
     console.log("result after updating the password table",result1)
     if(!result){
-      res.status(401).json({message:"something went wrong while updating the password"});
+      return res.status(401).json({message:"something went wrong while updating the password"});
     }
     res.status(200).json({
       message:
