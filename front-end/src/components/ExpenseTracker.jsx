@@ -2,6 +2,7 @@ import StripePaymentModal from "./StripePaymentModal";
 import { useState } from "react";
 import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useNavigate } from "react-router-dom";
 import {
   Elements,
   CardElement,
@@ -10,6 +11,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 const ExpenseTracker = () => {
+  const navigate = useNavigate();
   const [money, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
@@ -20,6 +22,12 @@ const ExpenseTracker = () => {
   const [clientSecret, setClientSecret] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const logOutHandler = (e)=>{
+    e.preventDefault();
+    localStorage.removeItem("token");
+    navigate("/");
+  }
 
   const getPremiumHandler = async (e) => {
     console.log("premium button clicked");
@@ -154,7 +162,7 @@ const ExpenseTracker = () => {
   return (
     <div className="container">
       <h1 className="">YOUR EXPENSE TRACKER</h1>
-      <button type="button">log out</button>
+      <button type="button" onClick={logOutHandler}>log out</button>
       <form onSubmit={handleSubmit}>
         <div className="mt-2">
           <label className="text-white">Expense Amount</label>
