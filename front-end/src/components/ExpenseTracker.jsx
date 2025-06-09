@@ -160,8 +160,8 @@ const ExpenseTracker = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="">YOUR EXPENSE TRACKER</h1>
+    <>
+      <h1 className="Header">YOUR EXPENSE TRACKER</h1>
       <button type="button" onClick={logOutHandler}>log out</button>
       <form onSubmit={handleSubmit}>
         <div className="mt-2">
@@ -258,7 +258,7 @@ const ExpenseTracker = () => {
       {isPremiuim && (
         <button className="btn btn-info mt-3">List Of Downloaded Files</button>
       )}
-    </div>
+    </>
   );
 };
 

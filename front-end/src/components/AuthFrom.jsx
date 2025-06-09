@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import "./AuthFrom.css";
+import {FaEye, FaEyeSlash } from "react-icons/fa"
 
 const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -47,74 +49,79 @@ const AuthForm = () => {
     }
   };
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">
+    <>
+    <div className="header-container">
+      <h1 className="header">YOUR EXPENSE TRACKER</h1>
+    </div>
+      
+      <div className="login-form-outer-container">
+        <div className="login-form-inner-container">
+        <h2>
           {isSignUp ? "Sign Up" : "Login"}
         </h2>
         {!forgotPassword && (
           <form onSubmit={handleSubmit}>
             {isSignUp && (
-              <div className="mb-4">
-                <label className="block mb-1">Username:</label>
+              <div className="username-input-container">
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your username"
-                  className="w-full p-2 border rounded"
+                  className="username-input"
                   required
                 />
               </div>
             )}
-            <div className="mb-4">
-              <label className="block mb-1">Email:</label>
+            <div className="email-input-container">
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className="w-full p-2 border rounded"
+                className="email-input"
                 required
               />
             </div>
-            <div className="mb-4 relative">
-              <label className="block mb-1">Password:</label>
+            <div className="password-input-container">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                className="w-full p-2 border rounded"
+                className="password-input"
                 required
               />
-              <button
+              <span
                 type="button"
-                className="absolute right-3 top-9 text-sm text-gray-600"
+                className="show-password-button"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "Hide" : "Show"}
-              </button>
+                {/* {showPassword ? <FaEyeSlash/> : <FaEye/>} */}
+              </span>
             </div>
-            <button
+            <div className="submit-button-container">
+              <button
               type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
+              className="submit-button"
             >
               {isSignUp ? "Sign Up" : "Login"}
             </button>
+            </div>
+            
           </form>
         )}
-        <p className="mt-4 text-center">
+        <p className="already-user">
           {isSignUp ? "Already a user?" : "New here?"}{" "}
           <button
             onClick={() => {
               setIsSignUp(!isSignUp);
               setFormData({ name: "", email: "", password: "" });
             }}
-            className="text-blue-500 underline"
+            className="toggle-button"
           >
             {isSignUp ? "Login" : "Sign Up"}
           </button>
@@ -122,8 +129,9 @@ const AuthForm = () => {
         <a href="" onClick={forgotPasswordHandler}>
           forgot password?
         </a>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

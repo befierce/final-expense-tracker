@@ -1,0 +1,116 @@
+.header-container{
+    height: 20vh;
+    background-color: #301A4B;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 400px;
+}
+.header{
+    padding-left: 4%;
+    margin: 0;
+    color: #FFEAEC;
+    min-width: 400px;
+}
+
+.login-form-outer-container{
+    height:90vh;
+    background-color: #6DB1BF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 400px;
+}
+
+.login-form-inner-container{
+    height: 80%;
+    width: 40%;
+    min-width: 400px;
+    margin-top: 4vh;
+    border-radius: 12px;
+    position: relative;
+    padding: 2rem 3rem;
+    background-color: #6DB1BF;
+    color: #FFEAEC; 
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-form-inner-container h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+h2{
+    padding: 5px;
+}
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: black;
+  outline: none;
+  transition: 0.3s ease all;
+  min-width: 250px;
+}
+
+input:focus{
+    background-color: #dae6b8;
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.show-password-button {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: #7942bd;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.8;
+  background: none;
+  border: none;
+}
+
+.show-password-button:hover {
+  opacity: 1;
+}
+
+.submit-button-container{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 10px;
+}
+.submit-button{
+    width: 40%;
+    height: 40px;
+    border-radius:10px ;
+}
