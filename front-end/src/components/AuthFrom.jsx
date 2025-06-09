@@ -95,13 +95,6 @@ const AuthForm = () => {
                 className="password-input"
                 required
               />
-              <span
-                type="button"
-                className="show-password-button"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {/* {showPassword ? <FaEyeSlash/> : <FaEye/>} */}
-              </span>
             </div>
             <div className="submit-button-container">
               <button
@@ -116,7 +109,7 @@ const AuthForm = () => {
         )}
         <p className="already-user">
           {isSignUp ? "Already a user?" : "New here?"}{" "}
-          <button
+          <a href=""
             onClick={() => {
               setIsSignUp(!isSignUp);
               setFormData({ name: "", email: "", password: "" });
@@ -124,7 +117,7 @@ const AuthForm = () => {
             className="toggle-button"
           >
             {isSignUp ? "Login" : "Sign Up"}
-          </button>
+          </a>
         </p>
         <a href="" onClick={forgotPasswordHandler}>
           forgot password?

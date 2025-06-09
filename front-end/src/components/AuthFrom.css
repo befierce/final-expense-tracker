@@ -114,3 +114,10 @@ input:focus{
     height: 40px;
     border-radius:10px ;
 }
+
+.submit-button:hover{
+    background-color: bisque;
+}
+a:hover{
+    color: black;
+}
