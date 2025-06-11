@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
+import "./ExpenseTracker.css";
 import {
   Elements,
   CardElement,
@@ -23,11 +24,11 @@ const ExpenseTracker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const logOutHandler = (e)=>{
+  const logOutHandler = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
     navigate("/");
-  }
+  };
 
   const getPremiumHandler = async (e) => {
     console.log("premium button clicked");
@@ -55,7 +56,7 @@ const ExpenseTracker = () => {
     setShowPaymentForm(false);
   };
   const handleClosePaymentForm = () => {
-    console.log("close button clicked")
+    console.log("close button clicked");
     setShowPaymentForm(false);
   };
 
@@ -161,77 +162,88 @@ const ExpenseTracker = () => {
 
   return (
     <>
-      <h1 className="Header">YOUR EXPENSE TRACKER</h1>
-      <button type="button" onClick={logOutHandler}>log out</button>
-      <form onSubmit={handleSubmit}>
-        <div className="mt-2">
-          <label className="text-white">Expense Amount</label>
-          <input
-            type="number"
-            className="form-control"
-            value={money}
-            onChange={(e) => setExpenseAmount(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mt-2">
-          <label className="text-white">Description</label>
-          <input
-            type="text"
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mt-2">
-          <label className="text-white">Category</label>
-          <select
-            className="form-control"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="groceries">Groceries</option>
-            <option value="rent">Rent</option>
-            <option value="utilities">Utilities</option>
-            <option value="entertainment">Entertainment</option>
-          </select>
-        </div>
-        <div className="mt-3">
-          <button type="submit" className="btn btn-primary">
-            Submit
-          </button>
-        </div>
-      </form>
-      <ul className="list-group mt-3">
-        {expenses.map((expense) => (
-          <li key={expense.id} className="list-group-item">
-            ${expense.money} - {expense.description} - ({expense.category})
-            <span>
-              <button
-                className="edit"
-                action="edit"
-                onClick={() => {
-                  editHandler(expense);
-                }}
+      <div className="header-container">
+        <h1 className="header">YOUR EXPENSE TRACKER</h1>
+        <button type="button" className="logout-button" onClick={logOutHandler}>
+          log out
+        </button>
+      </div>
+      <div className="contaier-form-and-expenses">
+        <div className="expense-tracker-form-outer-container">
+          <form onSubmit={handleSubmit}>
+            <div className="input-outer-container">
+              <input
+                type="number"
+                className="amount-input"
+                value={money}
+                placeholder="Enter Amount"
+                onChange={(e) => setExpenseAmount(e.target.value)}
+                required
+              />
+            </div>
+            <div className="input-outer-container">
+              <input
+                type="text"
+                className="description-input"
+                value={description}
+                placeholder="Description"
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+            <div className="categories">
+              <select
+                className="form-control"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
               >
-                edit
-              </button>
-            </span>
-            <span>
-              <button
-                className="delete"
-                action="delete"
-                onClick={() => {
-                  deleteHandler(expense.id);
-                }}
-              >
-                delete
-              </button>
-            </span>
-          </li>
-        ))}
-      </ul>
+                <option value="groceries">Groceries</option>
+                <option value="rent">Rent</option>
+                <option value="utilities">Utilities</option>
+                <option value="entertainment">Entertainment</option>
+              </select>
+            </div>
+            {/* <div className="submit-expense-button-container"> */}
+            <button type="submit" className="submit-expense-button">
+              Submit
+            </button>
+            {/* </div> */}
+          </form>
+        </div>
+        <div className="expense-list-container">
+            <ul className="expense-list-ul-container">
+              {expenses.map((expense) => (
+                <li key={expense.id} className="expense-list-item">
+                  ${expense.money} - {expense.description} - ({expense.category})
+                  <div className="delete-edit-button-container">
+                    <span>
+                      <button
+                        className="edit"
+                        action="edit"
+                        onClick={() => {
+                          editHandler(expense);
+                        }}
+                      >
+                        edit
+                      </button>
+                    </span>
+                    <span>
+                      <button
+                        className="delete"
+                        action="delete"
+                        onClick={() => {
+                          deleteHandler(expense.id);
+                        }}
+                      >
+                        delete
+                      </button>
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       {!isPremiuim && (
         <button
           className="btn btn-success mt-3"
