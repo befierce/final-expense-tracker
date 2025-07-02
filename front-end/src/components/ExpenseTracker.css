@@ -5,7 +5,7 @@
     flex-direction: row;
     align-items: center;
     min-width: 400px;
-    gap: 40%;
+    gap: 20%;
     flex-wrap: wrap;
     overflow: hidden; 
 }
@@ -16,13 +16,24 @@
     min-width: 400px; 
 }
 .logout-button{
-    margin-left: 2%;
+    margin-left: 4%;
     margin-right: 2%;
     height: 32px;
     width: 62px;
     border-radius: 6px;
 }
 .logout-button:hover{
+    cursor: pointer;
+}
+
+.premium-button{
+    margin-left: 4%;
+    margin-right: 2%;
+    height: 32px;
+    width: 92px;
+    border-radius: 6px;
+}
+.premium-button:hover{
     cursor: pointer;
 }
 .contaier-form-and-expenses {
@@ -146,6 +157,7 @@ select{
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
   font-family: Arial, sans-serif;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);

@@ -2,6 +2,8 @@ const { where } = require("sequelize");
 const { user, userExpense } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { response } = require("express");
+const { fn, col } = require("sequelize");
+
 
 // require("dotenv").config();
 
@@ -90,7 +92,14 @@ exports.getExpenseDataFromTheServer = async (req, res, next) => {
     });
     console.log("fetching the data from server", result);
     // res.json({ result, isPremiumUser });
-    res.json({ result }); // Send the result to the client
+
+    const data = await userExpense.findOne({
+      where: { userId: userId },
+      attributes: [[fn("SUM", col("money")), "totalAmount"]],
+    });
+    const totalAmount = data.dataValues.totalAmount
+    // console.log("total expense amount by the user", ata.dataValues.totalAmount)
+    res.json({ result , totalAmount}); // Send the result to the client
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Error fetching data" });
@@ -114,33 +123,32 @@ exports.updateSingleExpenseDataInTheServer = async (req, res, next) => {
   try {
     let decoded;
     let userId;
-    try{
-        decoded = await jwt.verify(token,secretKey);
-        userId = decoded.userId;
-    }catch(jwtError){
-      if(jwtError instanceof jwt.JsonWebTokenError){
-        return res.status(400).json({message:"jwt authentication error"})
+    try {
+      decoded = await jwt.verify(token, secretKey);
+      userId = decoded.userId;
+    } catch (jwtError) {
+      if (jwtError instanceof jwt.JsonWebTokenError) {
+        return res.status(400).json({ message: "jwt authentication error" });
       }
-      if(jwtError instanceof jwt.TokenExpiredError){
-        return res.status(401).json({message:"token expired"})
+      if (jwtError instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: "token expired" });
       }
     }
-    const updates = {...req.body,userId,id:id};
-    const expense =  await userExpense.findOne({
+    const updates = { ...req.body, userId, id: id };
+    const expense = await userExpense.findOne({
       where: { id: id },
     });
-    if(!expense){
-      console.log("expense not found")
-      return res.status(404).json({message:"expense not found"});
+    if (!expense) {
+      console.log("expense not found");
+      return res.status(404).json({ message: "expense not found" });
     }
-    await userExpense.update(updates,{
-      where:{id,userId} 
+    await userExpense.update(updates, {
+      where: { id, userId },
     });
     const result = await userExpense.findAll({ where: { id, userId } });
-    return res.status(200).json({result, message: "data updated success"})
-  } 
-  catch (error) {
-    res.status(500).json({message:"error updating the data"})
+    return res.status(200).json({ result, message: "data updated success" });
+  } catch (error) {
+    res.status(500).json({ message: "error updating the data" });
   }
 };
 
@@ -148,11 +156,10 @@ exports.deleteSingleExpenseDataFromTheServer = async (req, res, next) => {
   const id = req.params.id;
   console.log("item delete id", id);
 
-  try{
-    await userExpense.destroy({where:{id:id}})
+  try {
+    await userExpense.destroy({ where: { id: id } });
     res.status(200).json({ userId: id, message: "Data deleted successfully" });
-  }
-  catch(error){
+  } catch (error) {
     console.error("Error deleting data:", err);
     res.status(500).json({ error: "Error deleting data" });
   }

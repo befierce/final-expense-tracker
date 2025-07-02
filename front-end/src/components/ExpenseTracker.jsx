@@ -126,6 +126,7 @@ const ExpenseTracker = () => {
         });
         const responsExtracted = await response.json();
         const data = responsExtracted.result.rows;
+        const totalAmountOfUser = responsExtracted.totalAmount
         console.log(typeof data);
         const expenseArray = Object.values(data);
         console.log(expenseArray);
