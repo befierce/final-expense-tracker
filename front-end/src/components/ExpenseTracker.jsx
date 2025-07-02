@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
+import { useSelector ,useDispatch} from "react-redux";
+import { login,logout } from "../store/AuthSlice"
 import "./ExpenseTracker.css";
 import {
   Elements,
@@ -13,6 +15,8 @@ import {
 
 const ExpenseTracker = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const state = useSelector(state => console.log("-->",state.auth.isAuthenticated));
   const [money, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
@@ -27,6 +31,9 @@ const ExpenseTracker = () => {
   const logOutHandler = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
+    dispatch(logout())
+
+    console.log("new state", state)
     navigate("/");
   };
 
@@ -164,6 +171,17 @@ const ExpenseTracker = () => {
     <>
       <div className="header-container">
         <h1 className="header">YOUR EXPENSE TRACKER</h1>
+        {!isPremiuim && (
+          <button
+            className="premium-button"
+            action="get-premium"
+            onClick={() => {
+              getPremiumHandler();
+            }}
+          >
+            Get Premium
+          </button>
+        )}
         <button type="button" className="logout-button" onClick={logOutHandler}>
           log out
         </button>
@@ -173,11 +191,17 @@ const ExpenseTracker = () => {
           <form onSubmit={handleSubmit}>
             <div className="input-outer-container">
               <input
-                type="number"
+                type="text"
                 className="amount-input"
                 value={money}
                 placeholder="Enter Amount"
-                onChange={(e) => setExpenseAmount(e.target.value)}
+                onChange={(e) => {
+                  // Accept only digits and restrict to 5 digits
+                  const val = e.target.value;
+                  if (/^\d{0,5}$/.test(val)) {
+                    setExpenseAmount(val);
+                  }
+                }}
                 required
               />
             </div>
@@ -188,6 +212,7 @@ const ExpenseTracker = () => {
                 value={description}
                 placeholder="Description"
                 onChange={(e) => setDescription(e.target.value)}
+                maxLength={15}
                 required
               />
             </div>
@@ -211,50 +236,40 @@ const ExpenseTracker = () => {
           </form>
         </div>
         <div className="expense-list-container">
-            <ul className="expense-list-ul-container">
-              {expenses.map((expense) => (
-                <li key={expense.id} className="expense-list-item">
-                  ${expense.money} - {expense.description} - ({expense.category})
-                  <div className="delete-edit-button-container">
-                    <span>
-                      <button
-                        className="edit"
-                        action="edit"
-                        onClick={() => {
-                          editHandler(expense);
-                        }}
-                      >
-                        edit
-                      </button>
-                    </span>
-                    <span>
-                      <button
-                        className="delete"
-                        action="delete"
-                        onClick={() => {
-                          deleteHandler(expense.id);
-                        }}
-                      >
-                        delete
-                      </button>
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="expense-list-ul-container">
+            {expenses.map((expense) => (
+              <li key={expense.id} className="expense-list-item">
+                ${expense.money} - {expense.description} - ({expense.category})
+                <div className="delete-edit-button-container">
+                  <span>
+                    <button
+                      className="edit"
+                      action="edit"
+                      onClick={() => {
+                        editHandler(expense);
+                      }}
+                    >
+                      edit
+                    </button>
+                  </span>
+                  <span>
+                    <button
+                      className="delete"
+                      action="delete"
+                      onClick={() => {
+                        deleteHandler(expense.id);
+                      }}
+                    >
+                      delete
+                    </button>
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      {!isPremiuim && (
-        <button
-          className="btn btn-success mt-3"
-          action="get-premium"
-          onClick={() => {
-            getPremiumHandler();
-          }}
-        >
-          Get Premium
-        </button>
-      )}
+      </div>
+
       {showPaymentForm && (
         <StripePaymentModal
           clientSecret={clientSecret}

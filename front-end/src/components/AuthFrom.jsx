@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./AuthFrom.css";
-import {FaEye, FaEyeSlash } from "react-icons/fa"
+import {FaEye, FaEyeSlash } from "react-icons/fa";
+import {useSelector,useDispatch} from 'react-redux';
+import {login,logout} from '../store/AuthSlice'
 
 const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -13,6 +15,9 @@ const AuthForm = () => {
     password: "",
   });
   const navigate = useNavigate(); // Initialize navigation
+  const state = useSelector(state => state.isAuthenticated);// getting state from redux store
+  const dispatch = useDispatch();
+
   const forgotPasswordHandler = () => {
     navigate("/forgotPassword");
   };
@@ -41,6 +46,7 @@ const AuthForm = () => {
       } else {
         console.log(data);
         localStorage.setItem("token", token);
+        dispatch(login())
         navigate("/main");
       }
       setFormData({ name: "", email: "", password: "" });
