@@ -20,7 +20,7 @@ router.delete(
 );
 
 router.post("/user/purchase/premium", purchase.purchasePremium);
-router.post("/user/purchase/premium", purchase.verifyPayment);
+router.post("/user/verify/premium", purchase.verifyPayment);
 
 router.get(
   "/user/premium/leaderboard",
