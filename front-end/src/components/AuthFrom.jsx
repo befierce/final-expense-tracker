@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./AuthFrom.css";
-import {FaEye, FaEyeSlash } from "react-icons/fa";
-import {useSelector,useDispatch} from 'react-redux';
-import {login,logout} from '../store/AuthSlice'
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { login, logout } from "../store/AuthSlice";
+import { setPremium } from "../store/PremiumSlice";
 
 const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -15,7 +16,8 @@ const AuthForm = () => {
     password: "",
   });
   const navigate = useNavigate(); // Initialize navigation
-  const state = useSelector(state => state.isAuthenticated);// getting state from redux store
+  const state = useSelector((state) => state.isAuthenticated); // getting state from redux store
+  const premiumState = useSelector((state) => state.premium.premium);
   const dispatch = useDispatch();
 
   const forgotPasswordHandler = () => {
@@ -46,7 +48,9 @@ const AuthForm = () => {
       } else {
         console.log(data);
         localStorage.setItem("token", token);
-        dispatch(login())
+        dispatch(login());
+        dispatch(setPremium());
+        localStorage.setItem("premium", true);
         navigate("/main");
       }
       setFormData({ name: "", email: "", password: "" });
@@ -56,79 +60,72 @@ const AuthForm = () => {
   };
   return (
     <>
-    <div className="header-container">
-      <h1 className="header">YOUR EXPENSE TRACKER</h1>
-    </div>
-      
+      <div className="header-container">
+        <h1 className="header">YOUR EXPENSE TRACKER</h1>
+      </div>
+
       <div className="login-form-outer-container">
         <div className="login-form-inner-container">
-        <h2>
-          {isSignUp ? "Sign Up" : "Login"}
-        </h2>
-        {!forgotPassword && (
-          <form onSubmit={handleSubmit}>
-            {isSignUp && (
-              <div className="username-input-container">
+          <h2>{isSignUp ? "Sign Up" : "Login"}</h2>
+          {!forgotPassword && (
+            <form onSubmit={handleSubmit}>
+              {isSignUp && (
+                <div className="username-input-container">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your username"
+                    className="username-input"
+                    required
+                  />
+                </div>
+              )}
+              <div className="email-input-container">
                 <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your username"
-                  className="username-input"
+                  placeholder="Enter your email"
+                  className="email-input"
                   required
                 />
               </div>
-            )}
-            <div className="email-input-container">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className="email-input"
-                required
-              />
-            </div>
-            <div className="password-input-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className="password-input"
-                required
-              />
-
-            </div>
-            <div className="submit-button-container">
-              <button
-              type="submit"
-              className="submit-button"
+              <div className="password-input-container">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="password-input"
+                  required
+                />
+              </div>
+              <div className="submit-button-container">
+                <button type="submit" className="submit-button">
+                  {isSignUp ? "Sign Up" : "Login"}
+                </button>
+              </div>
+            </form>
+          )}
+          <p className="already-user">
+            {isSignUp ? "Already a user?" : "New here?"}{" "}
+            <button
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setFormData({ name: "", email: "", password: "" });
+              }}
+              className="toggle-button"
             >
-              {isSignUp ? "Sign Up" : "Login"}
+              {isSignUp ? "Login" : "Sign Up"}
             </button>
-            </div>
-            
-          </form>
-        )}
-        <p className="already-user">
-          {isSignUp ? "Already a user?" : "New here?"}{" "}
-          <button
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setFormData({ name: "", email: "", password: "" });
-            }}
-            className="toggle-button"
-          >
-            {isSignUp ? "Login" : "Sign Up"}
-          </button>
-        </p>
-        <a href="" onClick={forgotPasswordHandler}>
-          forgot password?
-        </a>
+          </p>
+          <a href="" onClick={forgotPasswordHandler}>
+            forgot password?
+          </a>
         </div>
       </div>
     </>

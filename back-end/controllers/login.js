@@ -14,7 +14,7 @@ async function loginToServerController(req, res) {
         email: email,
       },
     });
-
+    const premiumStatus = userAlreadyExists.dataValues.premium;
     if (userAlreadyExists) {
       const isPasswordValid = await bcrypt.compare(
         password,
@@ -23,7 +23,7 @@ async function loginToServerController(req, res) {
       if (isPasswordValid) {
         const token = jwt.sign({ userId: userAlreadyExists.userId }, secretKey); //generating token usign jwt
         console.log("token generated", token);
-        return res.status(202).json({ message: "Login!!", token: token });
+        return res.status(202).json({ message: "Login!!", token: token, premiumStatus:premiumStatus});
       } else {
         return res.status(201).json({ message: "Invalid password" });
       }

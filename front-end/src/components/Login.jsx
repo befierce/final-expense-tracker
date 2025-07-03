@@ -18,7 +18,7 @@ const Login = () => {
     });
       
       const token = response.data.token;
-      console.log("token recieved", response.data.token);
+      console.log("token recieved", response.data);
       localStorage.setItem('token',token);
     } catch (error) {
       console.error("Login Failed", error);

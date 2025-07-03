@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
-import { useSelector ,useDispatch} from "react-redux";
-import { login,logout } from "../store/AuthSlice"
+import { useSelector, useDispatch } from "react-redux";
+import { login, logout } from "../store/AuthSlice";
 import "./ExpenseTracker.css";
 import {
   Elements,
@@ -16,7 +16,8 @@ import {
 const ExpenseTracker = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const state = useSelector(state => console.log("-->",state.auth.isAuthenticated));
+  const state = useSelector((state) => console.log("-->", state));
+  const premium = useSelector((state) => state.premium.premium);
   const [money, setExpenseAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("groceries");
@@ -28,12 +29,14 @@ const ExpenseTracker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  let totalAmountOfUser;
+
   const logOutHandler = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
-    dispatch(logout())
+    dispatch(logout());
 
-    console.log("new state", state)
+    console.log("new state", state);
     navigate("/");
   };
 
@@ -116,6 +119,7 @@ const ExpenseTracker = () => {
   useEffect(() => {
     const fetchExpenses = async (e) => {
       const token = localStorage.getItem("token");
+      const premium = localStorage.getItem("premium")
       const endpoint = "http://localhost:3000/user/expense";
       try {
         const response = await fetch(endpoint, {
@@ -126,11 +130,11 @@ const ExpenseTracker = () => {
         });
         const responsExtracted = await response.json();
         const data = responsExtracted.result.rows;
-        const totalAmountOfUser = responsExtracted.totalAmount
-        console.log(typeof data);
+        totalAmountOfUser = responsExtracted.totalAmount;
         const expenseArray = Object.values(data);
         console.log(expenseArray);
         setExpenses(...expenses, expenseArray);
+        setIsPremium(true)
       } catch (error) {
         console.log(error);
       }
@@ -173,6 +177,7 @@ const ExpenseTracker = () => {
       <div className="header-container">
         <h1 className="header">YOUR EXPENSE TRACKER</h1>
         {!isPremiuim && (
+          
           <button
             className="premium-button"
             action="get-premium"
@@ -183,6 +188,7 @@ const ExpenseTracker = () => {
             Get Premium
           </button>
         )}
+        {isPremiuim && (<h3>premium</h3>)}
         <button type="button" className="logout-button" onClick={logOutHandler}>
           log out
         </button>
