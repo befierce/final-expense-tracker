@@ -28,7 +28,7 @@ const ExpenseTracker = () => {
   const [clientSecret, setClientSecret] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
   let totalAmountOfUser;
 
   const logOutHandler = (e) => {
@@ -39,7 +39,9 @@ const ExpenseTracker = () => {
     console.log("new state", state);
     navigate("/");
   };
-
+  const toggleTheme = ()=>{
+    setIsDarkTheme((previousTheme)=> !previousTheme );
+  }
   const getPremiumHandler = async (e) => {
     console.log("premium button clicked");
     setLoading(true);
@@ -119,7 +121,7 @@ const ExpenseTracker = () => {
   useEffect(() => {
     const fetchExpenses = async (e) => {
       const token = localStorage.getItem("token");
-      const premium = localStorage.getItem("premium")
+      const premium = localStorage.getItem("premium");
       const endpoint = "http://localhost:3000/user/expense";
       try {
         const response = await fetch(endpoint, {
@@ -134,7 +136,7 @@ const ExpenseTracker = () => {
         const expenseArray = Object.values(data);
         console.log(expenseArray);
         setExpenses(...expenses, expenseArray);
-        setIsPremium(true)
+        setIsPremium(true);
       } catch (error) {
         console.log(error);
       }
@@ -174,10 +176,9 @@ const ExpenseTracker = () => {
 
   return (
     <>
-      <div className="header-container">
+      <div className={isDarkTheme ? "header-container-dark":"header-container-light"}>
         <h1 className="header">YOUR EXPENSE TRACKER</h1>
         {!isPremiuim && (
-          
           <button
             className="premium-button"
             action="get-premium"
@@ -188,12 +189,25 @@ const ExpenseTracker = () => {
             Get Premium
           </button>
         )}
-        {isPremiuim && (<h3>premium</h3>)}
+        {isPremiuim && (
+          <button
+            style={{
+              marginLeft: "4%",
+              marginRight: "2%",
+              height: "32px",
+              width: "92px",
+              borderRadius: "6px",
+            }}
+            onClick={toggleTheme}
+          >
+            {isDarkTheme ? "Light Theme": "Dark Theme"}
+          </button>
+        )}
         <button type="button" className="logout-button" onClick={logOutHandler}>
           log out
         </button>
       </div>
-      <div className="contaier-form-and-expenses">
+      <div className={isDarkTheme ? "contaier-form-and-expenses-dark":"contaier-form-and-expenses-light"}>
         <div className="expense-tracker-form-outer-container">
           <form onSubmit={handleSubmit}>
             <div className="input-outer-container">
@@ -285,13 +299,13 @@ const ExpenseTracker = () => {
         />
       )}
       {isPremiuim && (
-        <button className="btn btn-info mt-3" action="download-expense">
+        <button className="donwload_files_button" action="download-expense">
           Download Expense
         </button>
       )}
-      {isPremiuim && (
+      {/* {isPremiuim && (
         <button className="btn btn-info mt-3">List Of Downloaded Files</button>
-      )}
+      )} */}
     </>
   );
 };

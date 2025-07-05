@@ -1,6 +1,17 @@
-.header-container{
+.header-container-light{
     height: 20vh;
-    background-color: #301A4B;
+    background-color: #84a98c;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 400px;
+    gap: 20%;
+    flex-wrap: wrap;
+    overflow: hidden; 
+}
+.header-container-dark{
+    height: 20vh;
+    background-color: #101919;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -22,6 +33,15 @@
     width: 62px;
     border-radius: 6px;
 }
+
+.premium_logo{
+    margin-left: 4%;
+    margin-right: 2%;
+    height: 32px;
+    width: 62px;
+    border-radius: 6px;
+}
+
 .logout-button:hover{
     cursor: pointer;
 }
@@ -36,12 +56,22 @@
 .premium-button:hover{
     cursor: pointer;
 }
-.contaier-form-and-expenses {
+.contaier-form-and-expenses-light {
     width: 100vw;
     min-width: 400px;
     height: 600px;
-    border: 2px solid black;
-    background-color: #6DB1BF;
+    /* border: 2px solid black; */
+    background-color: #cad2c5;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.contaier-form-and-expenses-dark {
+    width: 100vw;
+    min-width: 400px;
+    height: 600px;
+    /* border: 2px solid black; */
+    background-color: #222222;
     display: flex;
     align-items: center;
     justify-content: space-evenly;

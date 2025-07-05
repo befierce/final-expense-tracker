@@ -1,6 +1,6 @@
 .header-container{
     height: 20vh;
-    background-color: #301A4B;
+    background-color: #8248c9;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -52,6 +52,9 @@ form {
 }
 h2{
     padding: 5px;
+}
+.premiuim_logo{
+  color: #7942bd;
 }
 .username-input {
   width: 100%;
