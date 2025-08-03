@@ -37,8 +37,8 @@ const AuthForm = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        throw new Error(isSignUp ? "Signup failed!" : "Login failed!");
+      if(response.ok){
+        window.alert(isSignUp ? "Signup successful:" : "Login successful:")
       }
       const data = await response.json();
       console.log(isSignUp ? "Signup successful:" : "Login successful:", data);
@@ -49,13 +49,18 @@ const AuthForm = () => {
         console.log(data);
         localStorage.setItem("token", token);
         dispatch(login());
-        dispatch(setPremium());
-        localStorage.setItem("premium", true);
+        if (data.premiumStatus) {
+          dispatch(setPremium());
+          localStorage.setItem("premium", true);
+        }
+        if (!data.premiumStatus) {
+          localStorage.setItem("premium", false);
+        }
         navigate("/main");
       }
       setFormData({ name: "", email: "", password: "" });
     } catch (error) {
-      console.error(isSignUp ? "Signup error:" : "Login error:", error.message);
+      window.alert(isSignUp ? "Signup error:" : "Login error:" || error.message);
     }
   };
   return (
