@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { Parser } = require("json2csv");
 const secretKey = "15s253d34dwe4ffsf3df4srr";
 const {
   user,
@@ -11,28 +12,34 @@ const {
 const AWS = require("aws-sdk");
 
 exports.downloadExpenseController = async (req, res) => {
-  console.log(req.headers);
+  const token = req.headers.authorization.split(" ")[1];
+  console.log(token);
+  const verified = jwt.verify(token, secretKey);
+  console.log(verified);
+  if (!verified) {
+    return res.status(400).json(message, "token not verified");
+  }
+  const userId = verified.userId;
   try {
-    const decoded = jwt.verify(req.headers.authorisation, secretKey);
-    console.log("token after decoding", decoded);
-    userId = decoded.userId;
     const expenses = await userExpense.findAll({ where: { userId: userId } });
-    console.log("result", expenses);
-    const stringifiedExpenses = JSON.stringify(expenses);
-    const filename = `Expenses${userId}/${new Date()}.txt`;
-    const fileURL = await uploadToS3(stringifiedExpenses, filename);
+    if (!expenses || expenses.length === 0) {
+      return res.status(404).json({ message: "no expenses found" });
+    }
 
-    await Filedownloaded.create({
-      url: fileURL,
-      usersListUserId: userId,
-      date: sequelize.literal("CURRENT_TIMESTAMP"),
-    });
+    const plainExpenses = expenses.map((exp) => exp.toJSON());
+    // console.log("expenses of user",plainExpenses);
 
-    console.log("file url reached properly", fileURL);
-    res.status(200).json({ fileURL, success: true });
+    //conveting to .csv
+    const fields = ["money", "description", "category"];
+    const json2csvParser = new Parser({ fields });
+    const csvData = json2csvParser.parse(plainExpenses);
+    const filename = `Expense-${userId}-${Date.now()}.csv`;
+    res.setHeader("Content-Disposition",`attachment: filename=${filename}`);
+    res.setHeader("Content-Type","text/csv");
+    res.send(csvData);
+    // console.log("csv file data", csvData);
   } catch (error) {
     console.log("error in sendig file", error);
-    res.status(400).json({ error: "some error happend file is not recieved" });
   }
 };
 

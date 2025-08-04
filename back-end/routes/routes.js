@@ -31,16 +31,14 @@ router.post(
   forgotPassword.forgotPasswordController
 );
 
-// router.post(
-//   "/user/password/resetPassword/",
-//   forgotPassword.changePasswordController
-// );
 router.post(
   "/user/password/resetPassword/:uuid",
   forgotPassword.changePasswordController
 );
 
-router.get("/download", downloadController.downloadExpenseController);
-router.get("/user/get/download/data", downloadController.getPreviousData);
+router.get("/user/download", downloadController.downloadExpenseController);
+
+
+
 
 module.exports = router;

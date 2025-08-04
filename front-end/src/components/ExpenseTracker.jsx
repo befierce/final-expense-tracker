@@ -31,6 +31,31 @@ const ExpenseTracker = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   let totalAmountOfUser;
 
+  const downloadFilesButtonHandler = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/user/download", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("file download response", response);
+    if (response.ok) {
+      const blob = await response.blob();
+      console.log(blob);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "exepenses.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+    else{
+      window.alert("Download failed");
+    }
+  };
+
   const logOutHandler = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
@@ -122,6 +147,7 @@ const ExpenseTracker = () => {
     const fetchExpenses = async (e) => {
       const token = localStorage.getItem("token");
       const premium = localStorage.getItem("premium");
+      console.log("is it premium", premium);
       const endpoint = "http://localhost:3000/user/expense";
       try {
         const response = await fetch(endpoint, {
@@ -132,12 +158,13 @@ const ExpenseTracker = () => {
         });
         const responsExtracted = await response.json();
         const data = responsExtracted.result.rows;
+        console.log("initial fetch", responsExtracted);
         totalAmountOfUser = responsExtracted.totalAmount;
         const expenseArray = Object.values(data);
-        console.log(expenseArray);
+        // console.log(expenseArray);
         setExpenses(...expenses, expenseArray);
         // console.log("user premium hai kya?", premium)
-        if (premium === true) {
+        if (premium === "true") {
           setIsPremium(true);
         }
       } catch (error) {
@@ -211,7 +238,11 @@ const ExpenseTracker = () => {
           </button>
         )}
         {isPremiuim && (
-          <button className="download_files_button" action="download-expense">
+          <button
+            className="download_files_button"
+            action="download-expense"
+            onClick={downloadFilesButtonHandler}
+          >
             Download Expense
           </button>
         )}
