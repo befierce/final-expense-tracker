@@ -1,6 +1,7 @@
 const { user, userExpense, Order } = require("../models/user");
 const jwt = require("jsonwebtoken");
-const secretKey = "15s253d34dwe4ffsf3df4srr";
+// const secretKey = "15s253d34dwe4ffsf3df4srr";
+const secretKey = process.env.SECRET_KEY_JWT;
 const sercretStripeKey = process.env.STRIPE_SECRET_KEY;
 
 const stripe = require("stripe")(sercretStripeKey);

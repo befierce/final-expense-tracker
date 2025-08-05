@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { Parser } = require("json2csv");
-const secretKey = "15s253d34dwe4ffsf3df4srr";
+// const secretKey = "15s253d34dwe4ffsf3df4srr";
+const secretKey = process.env.SECRET_KEY_JWT;
 const {
   user,
   userExpense,
